@@ -13,6 +13,13 @@ public class Mission {
         this.alvo = alvo;
     }
 
+    public Mission() {
+      codMissao = "";
+      versao = 0;
+      alvo = alvo;
+
+    }
+
     public String getCodMissao() {
         return codMissao;
     }

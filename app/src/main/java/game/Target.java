@@ -5,7 +5,7 @@ public class Target {
     private Room room;
 
 
-    public Target(String tipo, Room room) {
+    public Target(String tipo) {
         this.tipo = tipo;
         this.room = room;
     }

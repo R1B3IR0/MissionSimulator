@@ -4,7 +4,7 @@ public class Room {
     private String name;
 
 
-    public Room(String name) {
+    public Room(String name, boolean b) {
         this.name = name;
 
     }
