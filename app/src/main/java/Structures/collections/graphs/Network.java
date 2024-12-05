@@ -870,6 +870,38 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
         }
     }
 
+    /**
+     * Checks if a vertex exists in the network.
+     *
+     * @param vertex The vertex to be checked.
+     * @return true if the vertex is already in the network, otherwise false.
+     */
+
+    public boolean containsVertex(T vertex) {
+        for (int i = 0; i < numVertices; i++) {
+            if (vertices[i].equals(vertex)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns a list of all vertices in the network.
+     *
+     * @return ArrayUnorderedList containing the vertices.
+     */
+
+    public ArrayUnorderedList<T> getVertices() {
+        ArrayUnorderedList<T> verticesList = new ArrayUnorderedList<>();
+        for (int i = 0; i < numVertices; i++) {
+            verticesList.addToRear(vertices[i]);
+        }
+        return verticesList;
+    }
+
+
+
 
 
 
