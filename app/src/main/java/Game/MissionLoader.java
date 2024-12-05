@@ -16,7 +16,6 @@ public class MissionLoader {
 
 
         ObjectMapper objectMapper = new ObjectMapper();
-
         JsonNode rootNode = objectMapper.readTree(inputStream);
 
         Mission mission = new Mission();
@@ -30,32 +29,50 @@ public class MissionLoader {
         mission.setAlvo(target);
 
 
-        JsonNode itensNode = rootNode.get("itens");
-        ArrayUnorderedList<Item> itens = new ArrayUnorderedList<>(); // Lista desordenada para itens
+        // Inicializar as coleções de itens e inimigos
+        ArrayUnorderedList<Item> itens = new ArrayUnorderedList<>();
+        ArrayUnorderedList<Enemy> inimigos = new ArrayUnorderedList<>();
 
+        // Criar os quartos para itens
+        JsonNode itensNode = rootNode.get("itens");
         for (JsonNode itemNode : itensNode) {
             String divisao = itemNode.get("divisao").asText();
             Room room = new Room(divisao, false);
 
+            // Determinar o tipo de item
             String tipo = itemNode.get("tipo").asText();
             if (tipo.equals("kit de vida")) {
                 int pontosRecuperados = itemNode.get("pontos-recuperados").asInt();
-                itens.addToRear(new HealthKit(room, pontosRecuperados));
+                HealthKit healthKit = new HealthKit(room, pontosRecuperados);
+                itens.addToRear(healthKit);
+                room.addItem(healthKit);
             } else if (tipo.equals("colete")) {
                 int pontosExtra = itemNode.get("pontos-extra").asInt();
-                itens.addToRear(new BulletProofVest(room, pontosExtra));
+                BulletProofVest vest = new BulletProofVest(room, pontosExtra);
+                itens.addToRear(vest);
+                room.addItem(vest);
             }
         }
 
-        // Carrega os inimigos
+
         JsonNode inimigosNode = rootNode.get("inimigos");
-        ArrayUnorderedList<Enemy> inimigos = new ArrayUnorderedList<>();
         for (JsonNode inimigoNode : inimigosNode) {
             String nome = inimigoNode.get("nome").asText();
             int poder = inimigoNode.get("poder").asInt();
             String divisao = inimigoNode.get("divisao").asText();
             Room room = new Room(divisao, false);
-            inimigos.addToRear(new Enemy(nome, poder, room));
+
+            Enemy enemy = new Enemy(nome, poder, room);
+            inimigos.addToRear(enemy);
+            room.addEnemy(enemy);
+        }
+
+
+        for (Item item : itens) {
+            mission.getRooms().addToRear(item.getRoom());
+        }
+        for (Enemy enemy : inimigos) {
+            mission.getRooms().addToRear(enemy.getDivisao());
         }
 
 
