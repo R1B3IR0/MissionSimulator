@@ -1,24 +1,24 @@
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
+
+import game.Mission;
+import game.MissionLoader;
+
 import java.io.InputStream;
 
 public class Main {
     public static void main(String[] args) {
-        InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("mission.json");
-
-        if (inputStream == null) {
-            System.out.println("Arquivo não encontrado.");
-            return;
-        }
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
         try {
-            JsonNode rootNode = objectMapper.readTree(inputStream);
-            System.out.println(rootNode.toPrettyString());
-        } catch (IOException e) {
+            InputStream inputStream = MissionLoader.class.getClassLoader().getResourceAsStream("mission.json");
+
+            if (inputStream == null) {
+                throw new IllegalArgumentException("Arquivo mission.json não encontrado no classpath.");
+            }
+            Mission mission = MissionLoader.loadMission(inputStream);
+
+            System.out.println(mission);
+
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar a missão: " + e.getMessage());
             e.printStackTrace();
         }
     }
