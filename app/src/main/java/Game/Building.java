@@ -68,13 +68,7 @@ public class Building {
         }
     }
 
-    /**
-     * Busca uma sala pelo nome.
-     *
-     * @param rooms Lista de salas.
-     * @param name Nome da sala.
-     * @return Sala correspondente ou null.
-     */
+
     private Room findRoomByName(ArrayUnorderedList<Room> rooms, String name) {
         for (Room room : rooms) {
             if (room.getName().equals(name)) {
@@ -84,21 +78,12 @@ public class Building {
         return null;
     }
 
-    /**
-     * Retorna a rede de salas.
-     *
-     * @return Objeto Network representando as conexões das salas.
-     */
+
     public Network<Room> getRoomNetwork() {
         return roomNetwork;
     }
 
-    /**
-     * Busca uma sala pelo nome na rede de salas.
-     *
-     * @param name Nome da sala a ser buscada.
-     * @return Sala correspondente ou null se não encontrada.
-     */
+
     public Room getRoomByName(String name) {
         for (Room room : roomNetwork.getVertices()) {
             if (room.getName().equals(name)) {
@@ -110,9 +95,7 @@ public class Building {
 
     @Override
     public String toString() {
-        return "Building{" +
-                "roomNetwork=" + roomNetwork +
-                '}';
+        return roomNetwork.toString();
     }
 
 

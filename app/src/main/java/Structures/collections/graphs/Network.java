@@ -908,7 +908,7 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
     public String toString()
     {
         if (numVertices == 0)
-            return "Graph is empty";
+            return "Network is empty";
 
         String result = new String("");
 

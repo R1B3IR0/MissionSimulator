@@ -50,7 +50,7 @@ public class Agent{
 
 
     public void setHealth(int health) {
-        this.health = Math.min(health, maxHealth); // Garante que a health não ultrapasse o máximo
+        this.health = Math.min(health, maxHealth);
     }
 
     public void setInventory(LinkedStack<Item> inventory) {
