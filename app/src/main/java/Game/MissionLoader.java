@@ -11,19 +11,30 @@ import java.io.InputStream;
 public class MissionLoader {
 
     public static Mission loadMission(InputStream inputStream) throws Exception {
-
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(inputStream);
-
-
 
         Mission mission = new Mission();
         mission.setCodMissao(rootNode.get("cod-missao").asText());
         mission.setVersao(rootNode.get("versao").asInt());
 
+        Building building = new Building();
+        loadBuilding(rootNode, building);
+
+        JsonNode alvoNode = rootNode.get("alvo");
+        Room targetRoom = building.getRoomByName(alvoNode.get("divisao").asText());
+        if (targetRoom == null) {
+            throw new IllegalArgumentException("Sala do alvo não encontrada: " + alvoNode.get("divisao").asText());
+        }
+        Target target = new Target(alvoNode.get("tipo").asText(), targetRoom);
+        mission.setAlvo(target);
+
+        loadItems(rootNode, building);
+        loadEnemies(rootNode, building);
 
         return mission;
     }
+
 
     private static void loadBuilding(JsonNode rootNode, Building building) {
 
