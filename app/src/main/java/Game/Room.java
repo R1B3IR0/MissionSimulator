@@ -41,6 +41,6 @@ public class Room {
 
     @Override
     public String toString() {
-        return "Room [name=" + name + ", enemies=" + enemies + ", items=" + items + "]";
+        return "[name=" + name + ", enemies=" + enemies + ", items=" + items + "]";
     }
 }

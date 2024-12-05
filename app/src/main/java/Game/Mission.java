@@ -8,7 +8,7 @@ public class Mission {
     private String codMissao;
     private int versao;
     private Target alvo;
-
+    private ArrayUnorderedList<Enemy> inimigos;
 
 
 
@@ -16,7 +16,7 @@ public class Mission {
         this.codMissao = codMissao;
         this.versao = versao;
         this.alvo = alvo;
-
+        this.inimigos = new ArrayUnorderedList<>();
 
     }
 
@@ -25,7 +25,7 @@ public class Mission {
         this.codMissao = "";
         this.versao = 0;
         this.alvo = null;
-
+        this.inimigos = new ArrayUnorderedList<>();
 
     }
 
@@ -53,7 +53,13 @@ public class Mission {
         this.alvo = alvo;
     }
 
+    public ArrayUnorderedList<Enemy> getInimigos() {
+        return inimigos;
+    }
 
+    public void addInimigo(Enemy inimigo) {
+        inimigos.addToRear(inimigo);
+    }
 
     @Override
     public String toString() {

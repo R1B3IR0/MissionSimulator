@@ -19,8 +19,6 @@ public class MissionLoader {
 
         JsonNode rootNode = objectMapper.readTree(inputStream);
 
-
-
         Mission mission = new Mission();
         mission.setCodMissao(rootNode.get("cod-missao").asText());
         mission.setVersao(rootNode.get("versao").asInt());
@@ -48,6 +46,7 @@ public class MissionLoader {
                 itens.addToRear(new BulletProofVest(room, pontosExtra));
             }
         }
+
         // Carrega os inimigos
         JsonNode inimigosNode = rootNode.get("inimigos");
         ArrayUnorderedList<Enemy> inimigos = new ArrayUnorderedList<>();
@@ -58,6 +57,8 @@ public class MissionLoader {
             Room room = new Room(divisao, false);
             inimigos.addToRear(new Enemy(nome, poder, room));
         }
+
+
 
 
 
