@@ -20,6 +20,7 @@ public class Building {
         if (!roomNetwork.containsVertex(room)) {
             roomNetwork.addVertex(room);
         }
+        //add vertex
     }
 
     /**
@@ -32,7 +33,7 @@ public class Building {
         if (room1 != null && room2 != null) {
             roomNetwork.addEdge(room1, room2, 1); // Conexão com peso padrão 1
         }
-    }
+    } //addEdge
 
     /**
      * Conecta duas salas com um peso específico.
