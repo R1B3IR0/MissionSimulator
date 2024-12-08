@@ -9,7 +9,7 @@ public class Room {
     private ArrayUnorderedList<Enemy> enemies;
     private ArrayUnorderedList<Item> items;
 
-    public Room(String name, boolean b) {
+    public Room(String name) {
         this.name = name;
         this.enemies = new ArrayUnorderedList<>();
         this.items = new ArrayUnorderedList<>();
@@ -41,6 +41,12 @@ public class Room {
 
     @Override
     public String toString() {
-        return "[name=" + name + ", enemies=" + enemies + ", items=" + items + "]";
+        String text = "";
+
+        text += "Nome: " + name + "\n";
+        text += "Inimigos: " + enemies.toString() + "\n";
+        text += "Itens: " + items.toString() + "\n";
+
+        return text;
     }
 }

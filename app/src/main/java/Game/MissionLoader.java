@@ -36,7 +36,7 @@ public class MissionLoader {
 
     private static void loadBuilding(JsonNode rootNode, Building building) {
 
-        rootNode.get("edificio").forEach(roomNode -> building.addRoom(new Room(roomNode.asText(), false)));
+        rootNode.get("edificio").forEach(roomNode -> building.addRoom(new Room(roomNode.asText())));
 
 
         rootNode.get("ligacoes").forEach(connectionNode -> {

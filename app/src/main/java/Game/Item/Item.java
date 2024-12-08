@@ -6,8 +6,7 @@ public abstract class Item {
    private Room room;
     private String tipo;
 
-    public Item (Room room, String tipo){
-
+    public Item (Room room, String tipo) {
         this.tipo = tipo;
         this.room = room;
 

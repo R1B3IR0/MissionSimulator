@@ -101,7 +101,6 @@ public class Graph<T> implements GraphADT<T> {
      * @param index1 The index of the first vertex.
      * @param index2 The index of the second vertex.
      */
-
     public void addEdge(int index1, int index2) {
         if (indexIsValid(index1) && indexIsValid(index2)) {
             adjMatrix[index1][index2] = true;
@@ -115,7 +114,6 @@ public class Graph<T> implements GraphADT<T> {
      * @param vertex The value of the vertex whose index is to be retrieved.
      * @return The index of the vertex if found, or -1 if the vertex is not present in the graph.
      */
-
     public int getIndex(T vertex) {
         for (int i = 0; i < numVertices; i++) {
             if (vertices[i].equals(vertex)) {
@@ -133,8 +131,6 @@ public class Graph<T> implements GraphADT<T> {
      * @param vertex1 The value of the first vertex.
      * @param vertex2 The value of the second vertex.
      */
-
-
     @Override
     public void removeEdge(T vertex1, T vertex2) {
 
@@ -149,7 +145,6 @@ public class Graph<T> implements GraphADT<T> {
      * @param index1 The index of the first vertex.
      * @param index2 The index of the second vertex.
      */
-
     public void removeEdge(int index1, int index2) {
         if (indexIsValid(index1) && indexIsValid(index2)) {
             adjMatrix[index1][index2] = false;
@@ -165,7 +160,6 @@ public class Graph<T> implements GraphADT<T> {
      * @param startVertex The value of the vertex to start the BFS traversal.
      * @return An iterator over the vertices visited during the BFS traversal.
      */
-
     @Override
     public Iterator<T> iteratorBFS(T startVertex) {
         return iteratorBFS(getIndex(startVertex));
@@ -178,7 +172,6 @@ public class Graph<T> implements GraphADT<T> {
      * @param startIndex The index of the vertex to start the BFS traversal.
      * @return An iterator over the vertices visited during the BFS traversal.
      */
-
     public Iterator<T> iteratorBFS(int startIndex) {
         Integer x;
         LinkedQueue<Integer> traversalQueue = new LinkedQueue<>();
@@ -428,7 +421,6 @@ public class Graph<T> implements GraphADT<T> {
      * @param targetIndex O índice do vértice de destino.
      * @return O comprimento do caminho mais curto.
      */
-
     public int shortestPathLength(int startIndex, int targetIndex) {
         int result = 0;
         if (!indexIsValid(startIndex) || !indexIsValid(targetIndex)) {
@@ -472,7 +464,6 @@ public class Graph<T> implements GraphADT<T> {
     }
 
     public int size() {
-
         return numVertices;
     }
 
@@ -496,6 +487,7 @@ public class Graph<T> implements GraphADT<T> {
 
 
     }
+
     public String toString() {
         if (numVertices == 0) {
             return "Graph is empty";
@@ -548,7 +540,4 @@ public class Graph<T> implements GraphADT<T> {
         }
         return adjMatrix[index1][index2];
     }
-
-
-
 }

@@ -4,37 +4,33 @@ import Game.Room;
 
 
 public class Enemy {
-    private String nomeEnemy;
-    private int poder;
+    private String name;
+    private int power;
     private Room room;
 
 
-    public Enemy(String nome, int poder, Room room) {
-        this.nomeEnemy = nome;
-        this.poder = poder;
+    public Enemy(String name, int power, Room room) {
+        this.name = name;
+        this.power = power;
         this.room = room;
     }
 
 
-    public String getNomeEnemy() {
-        return nomeEnemy;
+    public String getName() {
+        return name;
     }
 
-
-    public void setNomeEnemy(String nome) {
-        this.nomeEnemy = nome;
+    public void setName(String nome) {
+        this.name = nome;
     }
 
-
-    public int getPoder() {
-        return poder;
+    public int getPower() {
+        return power;
     }
 
-
-    public void setPoder(int poder) {
-        this.poder = poder;
+    public void setPower(int power) {
+        this.power = power;
     }
-
 
     public Room getDivisao() {
         return room;
@@ -46,6 +42,12 @@ public class Enemy {
 
     @Override
     public String toString() {
-        return "Inimigo [nome=" + nomeEnemy + ", poder=" + poder + ", divisao=" + room.getName() + "]";
+        String text = "";
+
+        text += "Nome: " + name + "\n";
+        text += "Poder: " + power + "\n";
+        text += "Divisão: " + room.toString() + "\n";
+
+        return text;
     }
 }

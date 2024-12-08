@@ -2,24 +2,23 @@ package Game.Player;
 
 import Game.Item.Item;
 import Game.Room;
+import Structures.collections.stacks.ArrayStack;
 import Structures.collections.stacks.LinkedStack;
 
 public class Agent{
 
     private final String name;
     private int health;
-    private final int maxHealth;
-    private LinkedStack<Item> inventory;
+    private final int MAXHEALTH = 100;
+    /** Mochila para armazenar os kits do agente */
+    private ArrayStack<Item> inventory;
     private Room currentRoom;
-    private int bulletProofVest;
 
 
-    public Agent(String name, int maxHealth) {
+    public Agent() {
         this.name = "Tó Cruz";
-        this.maxHealth = 100;
-        this.health = maxHealth;
-        this.bulletProofVest = 0;
-        this.inventory = new LinkedStack<>();
+        this.health = MAXHEALTH;
+        this.inventory = new ArrayStack<>();
         this.currentRoom = null;
     }
 
@@ -33,10 +32,10 @@ public class Agent{
     }
 
     public int getMaxHealth() {
-        return maxHealth;
+        return MAXHEALTH;
     }
 
-    public LinkedStack<Item> getInventory() {
+    public ArrayStack<Item> getInventory() {
         return inventory;
     }
 
@@ -44,25 +43,16 @@ public class Agent{
         return currentRoom;
     }
 
-    public int getBulletProofVest() {
-        return bulletProofVest;
-    }
-
-
     public void setHealth(int health) {
-        this.health = Math.min(health, maxHealth);
+        this.health = health;
     }
 
-    public void setInventory(LinkedStack<Item> inventory) {
+    public void setInventory(ArrayStack<Item> inventory) {
         this.inventory = inventory;
     }
 
     public void setCurrentRoom(Room currentRoom) {
         this.currentRoom = currentRoom;
-    }
-
-    public void setBulletProofVest(int bulletProofVest) {
-        this.bulletProofVest = bulletProofVest;
     }
 
 }

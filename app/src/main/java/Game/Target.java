@@ -27,6 +27,11 @@ public class Target {
 
     @Override
     public String toString() {
-        return "[tipo=" + tipo + ", room=" + room + "]";
+        String text = "";
+
+        text += "Tipo: " + tipo + "\n";
+        text += "Divisão: " + room.toString() + "\n";
+
+        return text;
     }
 }

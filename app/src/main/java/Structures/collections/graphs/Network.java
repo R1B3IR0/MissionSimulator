@@ -27,8 +27,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      *
      * @param vertex The value of the vertex to be added.
      */
-
-
     @Override
     public void addVertex(T vertex) {
         if (numVertices == vertices.length) {
@@ -49,8 +47,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      *
      * @param vertex The value of the vertex to be removed.
      */
-
-
     @Override
     public void removeVertex(T vertex) {
         for (int i = 0; i < numVertices; i++) {
@@ -67,7 +63,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      *
      * @param index The index of the vertex to be removed.
      */
-
     @Override
     public void removeVertex(int index) {
         if (indexIsValid(index)) {
@@ -90,6 +85,7 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
             }
         }
     }
+
     /**
      * Returns an iterator that performs a depth-first traversal
      * starting from the vertex with the specified value.
@@ -97,7 +93,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * @param startVertex The value of the start vertex.
      * @return An iterator for the depth-first traversal.
      */
-
     @Override
     public Iterator<T> iteratorDFS(T startVertex) {
         return iteratorDFS(getIndex(startVertex));
@@ -110,7 +105,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * @param startIndex The index of the start vertex.
      * @return An iterator for the depth-first traversal.
      */
-
     public Iterator<T> iteratorDFS(int startIndex) {
         Integer x;
         boolean found;
@@ -156,8 +150,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * @param startVertex The value of the start vertex.
      * @return An iterator for the breadth-first traversal.
      */
-
-
     @Override
     public Iterator<T> iteratorBFS(T startVertex) {
 
@@ -171,8 +163,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * @param startIndex The index of the start vertex.
      * @return An iterator for the breadth-first traversal.
      */
-
-
     public Iterator<T> iteratorBFS(int startIndex) {
         Integer x;
         LinkedQueue<Integer> traversalQueue = new LinkedQueue<>();
@@ -227,7 +217,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * @param targetIndex The index of the target vertex.
      * @return An iterator for the indices of the vertices in the shortest path.
      */
-
     @Override
     protected Iterator<Integer> iteratorShortestPathIndices(int startIndex, int targetIndex) {
         int index;
@@ -379,7 +368,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * @param targetIndex The index of the target vertex.
      * @return An iterator for the vertices in the shortest path.
      */
-
     @Override
     public Iterator<T> iteratorShortestPath(int startIndex, int targetIndex) {
         ArrayUnorderedList<T> templist = new ArrayUnorderedList<>();
@@ -406,7 +394,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * Method to check if this network is bidirectional.
      * @return true if this network is bidirectional.
      */
-
     public boolean isBidirectional() {
         for (int i = 0; i < numVertices; i++) {
             for (int j = 0; j < numVertices; j++) {
@@ -428,7 +415,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * @param targetVertex The target vertex.
      * @return An iterator for the vertices in the shortest path.
      */
-
     @Override
     public Iterator<T> iteratorShortestPath(T startVertex, T targetVertex) {
         return iteratorShortestPath(getIndex(startVertex), getIndex(targetVertex));
@@ -684,8 +670,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * @param index2 The index of the second vertex.
      * @return The weight of the specified edge.
      */
-
-
     private double getWeight(int index1, int index2) {
         return adjMatrix[index1][index2];
     }
@@ -718,8 +702,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * @return The weight of the shortest path between the specified vertices.
      * If the vertices are invalid or no path exists, returns Double.POSITIVE_INFINITY.
      */
-
-
     public double shortestPathWeight(int startIndex, int targetIndex) {
         double result = 0;
         if (!indexIsValid(startIndex) || !indexIsValid(targetIndex)) {
@@ -753,7 +735,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      *
      * @throws OutOfMemoryError If there is not enough memory to allocate the expanded arrays.
      */
-
     @Override
     protected void expandCapacity() {
         T[] largerVertices = (T[]) (new Object[vertices.length * 2]);
@@ -876,7 +857,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * @param vertex The vertex to be checked.
      * @return true if the vertex is already in the network, otherwise false.
      */
-
     public boolean containsVertex(T vertex) {
         for (int i = 0; i < numVertices; i++) {
             if (vertices[i].equals(vertex)) {
@@ -899,8 +879,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
         }
         return verticesList;
     }
-
-
 
 
 
