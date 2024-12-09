@@ -31,12 +31,8 @@ public abstract class Item {
 
     @Override
     public String toString() {
-        String text = "";
-
-        text += "Divisão: " + room.getName() + "\n";
-        text += "Tipo: " + type + "\n";
-
-        return text;
+        return type ;
     }
+
 
 }

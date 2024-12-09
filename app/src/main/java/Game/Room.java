@@ -39,14 +39,22 @@ public class Room {
         return items;
     }
 
+
+
+
     @Override
     public String toString() {
-        String text = "";
+        System.out.println();
+        System.out.println("Sala: " + name);
+        System.out.print("Inimigos: ");
+        enemies.forEach(enemy -> System.out.print(enemy.toString() + " "));
+        System.out.println();
 
-        text += "Nome: " + name + "\n";
-        text += "Inimigos: " + enemies.toString() + "\n";
-        text += "Itens: " + items.toString() + "\n";
+        System.out.print("Itens: ");
+        items.forEach(item -> System.out.print(item.toString() + " "));
+        System.out.println();
 
-        return text;
+        return "";
     }
+
 }

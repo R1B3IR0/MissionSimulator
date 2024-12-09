@@ -45,14 +45,6 @@ public class HealthKit extends Item{
         }
     }
 
-    @Override
-    public String toString() {
-        String text = "";
 
-        text += super.toString() + "\n";
-        text += "Pontos recuperados: " + pointsRecovered + "\n";
-
-        return text;
-    }
 }
 

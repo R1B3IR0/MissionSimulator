@@ -33,14 +33,6 @@ public class BulletProofVest extends Item {
         System.out.println("Colete à prova de bala com " + extraPoints + " pontos adicionado.");
     }
 
-    @Override
-    public String toString() {
-        String text = "";
 
-        text += super.toString() + "\n";
-        text += "Pontos extras: " + extraPoints + "\n";
-
-        return text;
-    }
 }
 

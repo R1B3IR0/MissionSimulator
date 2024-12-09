@@ -52,13 +52,10 @@ public class Enemy {
 
     @Override
     public String toString() {
-        String text = "";
-
-        text += "Nome: " + name + "\n";
-        text += "Ataque: " + power + "\n";
-        text += "Vida: " + heatlh + "\n";
-        text += "Divisão: " + room.toString() + "\n";
-
-        return text;
+        return
+                "Nome=" + name  + " " +
+                "Poder=" + power ;
     }
+
+
 }

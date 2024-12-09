@@ -1,97 +1,116 @@
 package Game;
 
+
 import Game.Item.BulletProofVest;
 import Game.Item.HealthKit;
 import Game.Player.Enemy;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import Structures.collections.lists.UnorderedLinkedList;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
-import java.io.InputStream;
+import java.io.FileReader;
+import java.io.IOException;
+
 
 public class MissionLoader {
-    /*
-    public static Mission loadMission(InputStream inputStream) throws Exception {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(inputStream);
+    public static UnorderedLinkedList<Room> RoomList = new UnorderedLinkedList<>();
 
 
-
-        Mission mission = new Mission();
-        mission.setCodMissao(rootNode.get("cod-missao").asText());
-        mission.setVersao(rootNode.get("versao").asInt());
+    public static void readFromJson(String filePath) {
+        JSONParser parser = new JSONParser();
 
 
-        return mission;
-    }
+        try {
+            Object obj = parser.parse(new FileReader(filePath));
+            JSONObject jsonObject = (JSONObject) obj;
 
-    public static void loadBuilding(JsonNode rootNode, Building building) {
+            String codMissao = (String) jsonObject.get("cod-missao");
+            long versao = (long) jsonObject.get("versao");
 
-        JsonNode roomsNode = rootNode.get("edificio");
-        for (JsonNode roomNode : roomsNode) {
-            Room room = new Room(roomNode.asText());
-            building.addRoom(room);
-        }
 
-        JsonNode connectionsNode = rootNode.get("ligacoes");
-        for (JsonNode connectionNode : connectionsNode) {
-            String room1Name = connectionNode.get(0).asText();
-            String room2Name = connectionNode.get(1).asText();
+            System.out.println("Código da Missão: " + codMissao);
+            System.out.println("Versão: " + versao);
 
-            Room room1 = building.getRoomByName(room1Name);
-            Room room2 = building.getRoomByName(room2Name);
+            //Adicionar quarto à lista
+            JSONArray quarto = (JSONArray) jsonObject.get("edificio");
+            for (Object objroom : quarto) {
+                String nomeQuarto = (String) objroom;
+                System.out.println("Nome do quarto: " + nomeQuarto);
 
-            if (room1 != null && room2 != null) {
-                building.connectRooms(room1, room2);
-            } else {
-                System.err.println("Erro ao conectar salas: " + room1Name + " e " + room2Name);
-            }
-        }
-    }
-
-    private static void loadItems(JsonNode rootNode, Building building) {
-        JsonNode itensNode = rootNode.get("itens");
-        for (JsonNode itemNode : itensNode) {
-            String roomName = itemNode.get("divisao").asText();
-            Room room = building.getRoomByName(roomName);
-
-            if (room == null) {
-                System.err.println("Erro: Sala não encontrada para o item: " + roomName);
-                continue;
+                Room room = new Room(nomeQuarto);
+                RoomList.addToRear(room);
             }
 
 
-            String tipo = itemNode.get("tipo").asText();
-            if (tipo.equals("kit de vida")) {
-                int pontosRecuperados = itemNode.get("pontos-recuperados").asInt();
-                HealthKit healthKit = new HealthKit(room, pontosRecuperados);
-                room.addItem(healthKit);
-            } else if (tipo.equals("colete")) {
-                int pontosExtra = itemNode.get("pontos-extra").asInt();
-                BulletProofVest vest = new BulletProofVest(room, pontosExtra);
-                room.addItem(vest);
+            // Adicionar inimigos à room
+            JSONArray inimigos = (JSONArray) jsonObject.get("inimigos");
+            System.out.println("Inimigos:");
+            for (Object inimigoObj : inimigos) {
+                JSONObject inimigo = (JSONObject) inimigoObj;
+                String nome = (String) inimigo.get("nome");
+                int poder = ((Long) inimigo.get("poder")).intValue();
+                String divisao = (String) inimigo.get("divisao");
+
+                Room room = findRoomByName(divisao, RoomList);
+                if (room != null) {
+                    Enemy enemy = new Enemy(nome, poder, room);
+                    room.addEnemy(enemy);
+                } else {
+                    System.out.println("Sala não encontrada para o inimigo: " + nome);
+                }
+
             }
+
+
+            JSONArray itens = (JSONArray) jsonObject.get("itens");
+            System.out.println("Itens:");
+            for (Object itemObj : itens) {
+                JSONObject item = (JSONObject) itemObj;
+
+                String tipo = (String) item.get("tipo");
+                String divisao = (String) item.get("divisao");
+                Room room = findRoomByName(divisao, RoomList);
+
+
+                if (tipo.equals("kit de vida")) {
+                    int pointsRecovered = ((Long) item.get("pontos-recuperados")).intValue();
+                    HealthKit healthKit = new HealthKit(room, pointsRecovered);
+                    room.addItem(healthKit);
+                } else {
+                    int extraPoints = ((Long) item.get("pontos-extra")).intValue();
+                    BulletProofVest bulletProofVest = new BulletProofVest(room, extraPoints);
+                    room.addItem(bulletProofVest);
+                }
+
+                System.out.println(RoomList);
+            }
+
+
+            JSONObject alvo = (JSONObject) jsonObject.get("alvo");
+            System.out.println("Alvo: " + alvo.get("divisao") + " (" + alvo.get("tipo") + ")");
+
+
+            JSONArray ligacoes = (JSONArray) jsonObject.get("ligacoes");
+            System.out.println("Ligações:");
+            for (Object ligacao : ligacoes) {
+                JSONArray link = (JSONArray) ligacao;
+                System.out.println(" - " + link.get(0) + " -> " + link.get(1));
+            }
+
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
         }
     }
 
-    private static void loadEnemies(JsonNode rootNode, Building building) {
-        JsonNode inimigosNode = rootNode.get("inimigos");
-        for (JsonNode enemyNode : inimigosNode) {
-            String roomName = enemyNode.get("divisao").asText();
-            Room room = building.getRoomByName(roomName);
-
-            if (room == null) {
-                System.err.println("Erro: Sala não encontrada para o inimigo: " + roomName);
-                continue;
+    public static Room findRoomByName(String name, UnorderedLinkedList<Room> roomList) {
+        for (Room room : roomList) {
+            if (room.getName().equals(name)) {
+                return room;
             }
-
-            String nome = enemyNode.get("nome").asText();
-            int poder = enemyNode.get("poder").asInt();
-
-            Enemy enemy = new Enemy(nome, poder, room);
-            room.addEnemy(enemy);
         }
+        return null;
     }
-    */
 
 }

@@ -8,10 +8,10 @@ import Structures.exceptions.NoSuchElementFound;
 import java.util.Iterator;
 
 public abstract class LinkedList<T> implements ListADT<T> {
-    private LinearNode<T> head;
-    private LinearNode<T> tail;
-    private int count;
-    private int modcount;
+    protected LinearNode<T> head;
+    protected LinearNode<T> tail;
+    protected int count;
+    protected int modcount;
 
     public LinkedList() {
         this.head = null;
@@ -208,5 +208,15 @@ public abstract class LinkedList<T> implements ListADT<T> {
             LinkedList.this.remove((T) previous.getElement());
             expectedModCount++;
         }
+    }
+    @Override
+    public String toString() {
+        String result = " ";
+        LinearNode<T> current = head;
+        while (current != null) {
+            result += current.getElement() + " ";
+            current = current.getNext();
+        }
+        return result;
     }
 }
