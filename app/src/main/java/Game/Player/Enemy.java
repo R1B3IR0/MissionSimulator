@@ -5,6 +5,7 @@ import Game.Room;
 
 public class Enemy {
     private String name;
+    private int heatlh;
     private int power;
     private Room room;
 
@@ -13,6 +14,7 @@ public class Enemy {
         this.name = name;
         this.power = power;
         this.room = room;
+        this.heatlh = 100;
     }
 
 
@@ -32,12 +34,20 @@ public class Enemy {
         this.power = power;
     }
 
-    public Room getDivisao() {
+    public Room getRoom() {
         return room;
     }
 
-    public void setDivisao(Room room) {
+    public void setRoom(Room room) {
         this.room = room;
+    }
+
+    public int getHeatlh() {
+        return heatlh;
+    }
+
+    public void setHeatlh(int heatlh) {
+        this.heatlh = heatlh;
     }
 
     @Override
@@ -45,7 +55,8 @@ public class Enemy {
         String text = "";
 
         text += "Nome: " + name + "\n";
-        text += "Poder: " + power + "\n";
+        text += "Ataque: " + power + "\n";
+        text += "Vida: " + heatlh + "\n";
         text += "Divisão: " + room.toString() + "\n";
 
         return text;

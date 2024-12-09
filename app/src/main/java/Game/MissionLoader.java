@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
 
 public class MissionLoader {
-
+    /*
     public static Mission loadMission(InputStream inputStream) throws Exception {
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -92,4 +92,6 @@ public class MissionLoader {
             room.addEnemy(enemy);
         }
     }
+    */
+
 }

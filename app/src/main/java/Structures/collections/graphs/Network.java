@@ -6,6 +6,7 @@ import Structures.collections.stacks.LinkedStack;
 import Structures.collections.trees.heaps.LinkedHeap;
 
 import java.util.Iterator;
+import java.util.Random;
 
 public class Network <T> extends Graph<T> implements NetworkADT <T>{
 
@@ -441,31 +442,33 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
         if (!indexIsValid(startIndex) || !indexIsValid(lastIndex)) {
             return verticesWithHighestWeight.iterator();
         }
-
         verticesWithHighestWeight.addToRear(vertices[startIndex]);
         int k = startIndex;
 
+        Random random = new Random();
+
         while (k != lastIndex) {
-            int nextVertex = -1;
-            double maxWeight = Double.NEGATIVE_INFINITY;
-
-
-            for (int j = 0; j < numVertices; j++) {
-                if (adjMatrix[k][j] > maxWeight && adjMatrix[k][j] < Double.POSITIVE_INFINITY &&
+            int temp = 0;
+            for (int j = 0; j <= this.vertices.length - 1; j++) {
+                if (adjMatrix[k][j] > highestWeight && adjMatrix[k][j] < Double.POSITIVE_INFINITY &&
                         !verticesWithHighestWeight.contains(vertices[j])) {
-                    maxWeight = adjMatrix[k][j];
-                    nextVertex = j;
+                    highestWeight = adjMatrix[k][j];
+                    temp = j;
                 }
             }
 
-
-            if (nextVertex == -1) {
-                break;
+            if (temp == 0) {
+                int randomIndex;
+                do {
+                    randomIndex = random.nextInt(this.vertices.length);
+                } while (adjMatrix[k][randomIndex] <= 0);
+                temp = randomIndex;
+                highestWeight = adjMatrix[k][randomIndex];
             }
 
-
-            verticesWithHighestWeight.addToRear(vertices[nextVertex]);
-            k = nextVertex;
+            k = temp;
+            verticesWithHighestWeight.addToRear(vertices[k]);
+            highestWeight = 0;
         }
 
         return verticesWithHighestWeight.iterator();
@@ -496,27 +499,33 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
         verticesWithSmallestWeight.addToRear(vertices[startIndex]);
         int k = startIndex;
 
+        Random random = new Random();
+
+
         while (k != lastIndex) {
-            int nextVertex = -1;
-            smallestWeight = Double.POSITIVE_INFINITY; // Resetar o menor peso a cada iteração
-
-
-            for (int j = 0; j < numVertices; j++) {
-                if (adjMatrix[k][j] < smallestWeight && adjMatrix[k][j] > 0 &&
-                        !verticesWithSmallestWeight.contains(vertices[j])) {
+            int temp = 0;
+            for (int j = 0; j <= this.vertices.length - 1; j++) {
+                if (adjMatrix[k][j] < smallestWeight && adjMatrix[k][j] > 0 && !verticesWithSmallestWeight.contains(vertices[j])) {
                     smallestWeight = adjMatrix[k][j];
-                    nextVertex = j;
+                    temp = j;
                 }
             }
 
 
-            if (nextVertex == -1) {
-                break;
+            if (temp == 0) {
+                int randomIndex;
+                do {
+                    randomIndex = random.nextInt(this.vertices.length);
+                } while (adjMatrix[k][randomIndex] <= 0);
+
+                temp = randomIndex;
+                smallestWeight = adjMatrix[k][randomIndex];
             }
 
+            k = temp;
 
-            verticesWithSmallestWeight.addToRear(vertices[nextVertex]);
-            k = nextVertex;
+            verticesWithSmallestWeight.addToRear(vertices[k]);
+            smallestWeight = Double.POSITIVE_INFINITY;
         }
 
         return verticesWithSmallestWeight.iterator();
@@ -546,7 +555,7 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
         return -1;
     }
 
-    public Network<T> mstNetworkk() {
+    public Network<T> mstNetwork() {
         int x, y;
         int index;
         double weight;
@@ -615,7 +624,7 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
     }
 
     public Iterator<T> shortestPathMTS(T startVertex, T endVertex) {
-        Network<T> mst = mstNetworkk();
+        Network<T> mst = mstNetwork();
         ArrayUnorderedList<T> path = new ArrayUnorderedList<>();
         boolean[] visited = new boolean[numVertices];
 
@@ -727,7 +736,21 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
         return result;
     }
 
-
+    /**
+     * Calcula e retorna o peso do caminho mais curto entre dois vértices
+     * na rede. O peso é determinado somando os pesos das arestas
+     * ao longo do caminho mais curto.
+     *
+     * @param startVertex O vértice de início.
+     * @param targetVertex O vértice de destino.
+     * @return O peso do caminho mais curto entre os vértices especificados. Se
+     * os vértices não forem válidos ou não houver caminho, retorna
+     * Double.POSITIVE_INFINITY.
+     */
+    @Override
+    public double shortestPathWeight(T startVertex, T targetVertex) {
+        return shortestPathWeight(getIndex(startVertex), getIndex(targetVertex));
+    }
 
     /**
      * Expands the graph's capacity by doubling the size of the arrays
@@ -789,17 +812,6 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
         }
     }
 
-    /**
-     * Returns the weight of the shortest path between two vertices identified by their values.
-     *
-     * @param startVertex The start vertex.
-     * @param targetVertex The target vertex.
-     * @return The weight of the shortest path between the two vertices.
-     */
-    @Override
-    public double shortestPathWeight(T startVertex, T targetVertex) {
-        return shortestPathWeight(getIndex(startVertex), getIndex(targetVertex));
-    }
 
     /**
      * Adds a bi-directional edge between two vertices identified by their values with a specified weight.
@@ -857,6 +869,7 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
      * @param vertex The vertex to be checked.
      * @return true if the vertex is already in the network, otherwise false.
      */
+    /*
     public boolean containsVertex(T vertex) {
         for (int i = 0; i < numVertices; i++) {
             if (vertices[i].equals(vertex)) {
@@ -865,13 +878,13 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
         }
         return false;
     }
-
+*/
     /**
      * Returns a list of all vertices in the network.
      *
      * @return ArrayUnorderedList containing the vertices.
      */
-
+    /*
     public ArrayUnorderedList<T> getVertices() {
         ArrayUnorderedList<T> verticesList = new ArrayUnorderedList<>();
         for (int i = 0; i < numVertices; i++) {
@@ -879,8 +892,7 @@ public class Network <T> extends Graph<T> implements NetworkADT <T>{
         }
         return verticesList;
     }
-
-
+*/
 
 
     public String toString()

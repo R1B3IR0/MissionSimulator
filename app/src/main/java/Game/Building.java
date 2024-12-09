@@ -2,102 +2,107 @@ package Game;
 
 import Structures.collections.graphs.Network;
 import Structures.collections.lists.ArrayUnorderedList;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Building {
 
-    private Network<Room> roomNetwork;
+    private Network<Room> map;
+    private ArrayUnorderedList<String> edificio;
+    private ArrayUnorderedList<ArrayUnorderedList<String>> conections;
 
     public Building() {
-        this.roomNetwork = new Network<>();
+        this.map = new Network<Room>();
+        this.edificio = new ArrayUnorderedList<String>();
+        this.conections = new ArrayUnorderedList<ArrayUnorderedList<String>>();
     }
 
-    /**
-     * Adiciona uma sala ao prédio.
-     *
-     * @param room Sala a ser adicionada.
-     */
-    public void addRoom(Room room) {
-        if (!roomNetwork.containsVertex(room)) {
-            roomNetwork.addVertex(room);
-        }
-        //add vertex
-    }
 
     /**
-     * Conecta duas salas com um peso padrão.
-     *
-     * @param room1 Primeira sala.
-     * @param room2 Segunda sala.
+     * Carrega JSON e gera o mapa
+     * @param //filePath para adicionar no paramentro no futuro
+     * @return void
      */
-    public void connectRooms(Room room1, Room room2) {
-        if (room1 != null && room2 != null) {
-            roomNetwork.addEdge(room1, room2, 1); // Conexão com peso padrão 1
-        }
-    } //addEdge
+    public void generateMapFromJson(String filePath) {
+        JSONParser parser = new JSONParser();
 
-    /**
-     * Conecta duas salas com um peso específico.
-     *
-     * @param room1 Primeira sala.
-     * @param room2 Segunda sala.
-     * @param weight Peso da conexão.
-     */
-    public void connectRooms(Room room1, Room room2, double weight) {
-        if (room1 != null && room2 != null) {
-            roomNetwork.addEdge(room1, room2, weight);
-        }
-    }
+        try {
+            // Ler o JSON de um arquivo
+            Object obj = parser.parse(new FileReader(filePath)); // Substitua pelo caminho do seu arquivo
+            JSONObject jsonObject = (JSONObject) obj;
 
-    /**
-     * Adiciona salas e conexões com base nos dados do JSON.
-     *
-     * @param rooms Lista de salas.
-     * @param connections Matriz de conexões (pares de nomes de salas).
-     */
-    public void loadFromJson(ArrayUnorderedList<Room> rooms, String[][] connections) {
-        for (Room room : rooms) {
-            addRoom(room);
-        }
+            // Acessar propriedades do JSON
+            String codMissao = (String) jsonObject.get("cod-missao");
+            long versao = (long) jsonObject.get("versao");
 
-        for (String[] connection : connections) {
-            Room room1 = findRoomByName(rooms, connection[0]);
-            Room room2 = findRoomByName(rooms, connection[1]);
+            // Exibir informações principais
+            System.out.println("Código da Missão: " + codMissao);
+            System.out.println("Versão: " + versao);
 
-            if (room1 != null && room2 != null) {
-                connectRooms(room1, room2);
+            // Manipular arrays
+            JSONArray edificio = (JSONArray) jsonObject.get("edificio");
+            System.out.println("Edifícios: " + edificio);
+
+            JSONArray ligacoes = (JSONArray) jsonObject.get("ligacoes");
+            System.out.println("Ligações:");
+            for (Object ligacao : ligacoes) {
+                JSONArray link = (JSONArray) ligacao;
+                System.out.println(" - " + link.get(0) + " -> " + link.get(1));
             }
-        }
-    }
 
-
-    private Room findRoomByName(ArrayUnorderedList<Room> rooms, String name) {
-        for (Room room : rooms) {
-            if (room.getName().equals(name)) {
-                return room;
+            // Manipular objetos dentro de arrays
+            JSONArray inimigos = (JSONArray) jsonObject.get("inimigos");
+            System.out.println("Inimigos:");
+            for (Object inimigoObj : inimigos) {
+                JSONObject inimigo = (JSONObject) inimigoObj;
+                System.out.println(" - Nome: " + inimigo.get("nome") + ", Poder: " + inimigo.get("poder") +
+                        ", Divisão: " + inimigo.get("divisao"));
             }
-        }
-        return null;
-    }
 
+            // Acessar objetos diretamente
+            JSONObject alvo = (JSONObject) jsonObject.get("alvo");
+            System.out.println("Alvo: " + alvo.get("divisao") + " (" + alvo.get("tipo") + ")");
 
-    public Network<Room> getRoomNetwork() {
-        return roomNetwork;
-    }
-
-
-    public Room getRoomByName(String name) {
-        for (Room room : roomNetwork.getVertices()) {
-            if (room.getName().equals(name)) {
-                return room;
+            // Manipular itens
+            JSONArray itens = (JSONArray) jsonObject.get("itens");
+            System.out.println("Itens:");
+            for (Object itemObj : itens) {
+                JSONObject item = (JSONObject) itemObj;
+                System.out.println(" - Divisão: " + item.get("divisao") + ", Tipo: " + item.get("tipo"));
             }
+
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
         }
-        return null;
     }
 
-    @Override
-    public String toString() {
-        return roomNetwork.toString();
+    public Network<Room> getMap() {
+        return map;
     }
 
 
+    public void setMap(Network<Room> map) {
+        this.map = map;
+    }
+
+    public ArrayUnorderedList<String> getEdificio() {
+        return edificio;
+    }
+
+    public void setEdificio(ArrayUnorderedList<String> edificio) {
+        this.edificio = edificio;
+    }
+
+    public ArrayUnorderedList<ArrayUnorderedList<String>> getConections() {
+        return conections;
+    }
+
+    public void setConections(ArrayUnorderedList<ArrayUnorderedList<String>> conections) {
+        this.conections = conections;
+    }
 }

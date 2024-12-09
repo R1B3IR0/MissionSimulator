@@ -3,19 +3,19 @@ package Game;
 public class Mission {
 
     private String codMissao;
-    private int versao;     // Auto-incremental?
+    private Version versao;     // Auto-incremental?
     private Target alvo;
 
-    public Mission(String codMissao, int versao, Target alvo) {
+
+    public Mission(String codMissao, Version versao, Target alvo) {
         this.codMissao = codMissao;
         this.versao = versao;
         this.alvo = alvo;
-
     }
 
     public Mission() {
         this.codMissao = "";
-        this.versao = 0;
+        this.versao = null;
         this.alvo = null;
 
     }
@@ -29,11 +29,11 @@ public class Mission {
         this.codMissao = codMissao;
     }
 
-    public int getVersao() {
+    public Version getVersao() {
         return versao;
     }
 
-    public void setVersao(int versao) {
+    public void setVersao(Version versao) {
         this.versao = versao;
     }
 
@@ -48,7 +48,13 @@ public class Mission {
 
     @Override
     public String toString() {
-        return "Missão [codMissao=" + codMissao + ", versao=" + versao + ", alvo=" + alvo + "]";
+        String text = "";
+
+        text += "Código da Missão: " + codMissao + "\n";
+        text += "Versão: " + versao.toString() + "\n";
+        text += "Alvo: " + alvo.toString() + "\n";
+
+        return text;
     }
 
 }

@@ -24,21 +24,21 @@ public class HealthKit extends Item{
     public void applyKit() {
         Agent agent = new Agent();
 
-        int points = agent.getHealth();   // 90
+        int health = agent.getHealth();   // 90
         
-        if(points >= 100) {
+        if(health >= 100) {
             System.out.println("Vida cheia.");
         } else {
             // Pontos a recuperar
             int pointsToAdd = pointsRecovered;  // 25
 
-            if(points + pointsToAdd > 100) {
-                pointsToAdd = 100 - points;
+            if(health + pointsToAdd > 100) {
+                pointsToAdd = 100 - health;
             }
 
-            points += pointsToAdd;
+            health += pointsToAdd;
             
-            agent.setHealth(points);
+            agent.setHealth(health);
             
             System.out.println("Kit de vida com " + pointsRecovered + " pontos dos quais " + pointsToAdd +
                     " foram adicionados.");

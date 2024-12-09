@@ -10,6 +10,7 @@ public class Agent{
     private final String name;
     private int health;
     private final int MAXHEALTH = 100;
+    private int power;
     /** Mochila para armazenar os kits do agente */
     private ArrayStack<Item> inventory;
     private Room currentRoom;
@@ -20,6 +21,7 @@ public class Agent{
         this.health = MAXHEALTH;
         this.inventory = new ArrayStack<>(2);
         this.currentRoom = null;
+        this.power = 50;
     }
 
 
@@ -55,12 +57,21 @@ public class Agent{
         this.currentRoom = currentRoom;
     }
 
+    public int getPower() {
+        return power;
+    }
+
+    public void setPower(int power) {
+        this.power = power;
+    }
+
     @Override
     public String toString() {
         String text = "";
 
         text += "Nome: " + name + "\n";
         text += "Vida: " + health + "\n";
+        text += "Ataque: " + power + "\n";
         text += "Mochila: " + inventory.toString() + "\n";
         text += "Divisão atual: " + currentRoom.toString() + "\n";
 
