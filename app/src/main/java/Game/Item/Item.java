@@ -3,14 +3,12 @@ package Game.Item;
 import Game.Room;
 
 public abstract class Item {
-   private Room room;
-    private String tipo;
+    private Room room;
+    private String type;
 
-    public Item (Room room, String tipo) {
-        this.tipo = tipo;
+    public Item(Room room, String type) {
+        this.type = type;
         this.room = room;
-
-
     }
 
     public Room getRoom() {
@@ -21,19 +19,24 @@ public abstract class Item {
         this.room = room;
     }
 
-    public String getTipo() {
-        return tipo;
+    public String getType() {
+        return type;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public abstract void aplicarEfeito();
+    public abstract void applyKit();
 
     @Override
     public String toString() {
-        return "Item [room=" + room + ", tipo=" + tipo + "]";
+        String text = "";
+
+        text += "Divisão: " + room.getName() + "\n";
+        text += "Tipo: " + type + "\n";
+
+        return text;
     }
 
 }

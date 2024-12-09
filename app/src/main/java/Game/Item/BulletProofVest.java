@@ -1,32 +1,46 @@
 package Game.Item;
 
 
+import Game.Player.Agent;
 import Game.Room;
 
 public class BulletProofVest extends Item {
-    private int pontosExtra;
+    private int extraPoints;
 
-    public BulletProofVest(Room room, int pontosExtra) {
+    public BulletProofVest(Room room, int extraPoints) {
         super(room, "colete");
-        this.pontosExtra = pontosExtra;
+        this.extraPoints = extraPoints;
     }
 
-    public int getPontosExtra() {
-        return pontosExtra;
+    public int getExtraPoints() {
+        return extraPoints;
     }
 
-    public void setPontosExtra(int pontosExtra) {
-        this.pontosExtra = pontosExtra;
+    public void setExtraPoints(int extraPoints) {
+        this.extraPoints = extraPoints;
     }
 
     @Override
-    public void aplicarEfeito() {
-        System.out.println("Adicionado " + pontosExtra + " pontos de defesa extra.");
+    public void applyKit() {
+        Agent agent = new Agent();
+
+        int health = agent.getHealth();
+
+        health += extraPoints;
+
+        agent.setHealth(health);
+
+        System.out.println("Colete à prova de bala com " + extraPoints + " pontos adicionado.");
     }
 
     @Override
     public String toString() {
-        return super.toString() + " [pontosExtra=" + pontosExtra + "]";
+        String text = "";
+
+        text += super.toString() + "\n";
+        text += "Pontos extras: " + extraPoints + "\n";
+
+        return text;
     }
 }
 

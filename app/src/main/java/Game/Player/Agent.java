@@ -18,7 +18,7 @@ public class Agent{
     public Agent() {
         this.name = "Tó Cruz";
         this.health = MAXHEALTH;
-        this.inventory = new ArrayStack<>();
+        this.inventory = new ArrayStack<>(2);
         this.currentRoom = null;
     }
 
@@ -55,4 +55,15 @@ public class Agent{
         this.currentRoom = currentRoom;
     }
 
+    @Override
+    public String toString() {
+        String text = "";
+
+        text += "Nome: " + name + "\n";
+        text += "Vida: " + health + "\n";
+        text += "Mochila: " + inventory.toString() + "\n";
+        text += "Divisão atual: " + currentRoom.toString() + "\n";
+
+        return text;
+    }
 }
