@@ -1,8 +1,6 @@
 import Game.*;
 import Game.Player.Agent;
-import Game.Player.Enemy;
 import Game.io.JsonHandler;
-import Structures.collections.graphs.Network;
 
 
 import java.util.Scanner;
@@ -10,50 +8,84 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        // Criar salas
-        Room room1 = new Room("Sala 1");
-        Room room2 = new Room("Sala 2");
-        Room room3 = new Room("Sala 3");
-        Room room4 = new Room("Sala 4");
-        Room room5 = new Room("Sala 5");
-        Room room6 = new Room("Sala 6");
-        Room room7 = new Room("Sala 7");
+        // Caminho do arquivo JSON (ajuste conforme necessário)
+        String filePath = "app//src//main//resources//mission.json";
 
-        // Criar a rede de salas (Network)
-        Network<Room> network = new Network<>();
+        // Carrega a missão a partir do JSON
+        Building building = JsonHandler.importJson(filePath);
+        Mission mission = new Mission(building);  // Criando a missão com o edifício carregado
+        MissionSimulator simulator = new MissionSimulator(mission); // Simulador de missão
 
-        // Adicionar salas à rede
-        network.addVertex(room1);
-        network.addVertex(room2);
-        network.addVertex(room3);
-        network.addVertex(room4);
-        network.addVertex(room5);
-        network.addVertex(room6);
-        network.addVertex(room7);
+        // Gerar e visualizar o mapa do edifício
+        building.generateMap();
+        building.visualizeGraph();
 
-        // Adicionar arestas entre as salas (conexões)
-        network.addEdge(room1, room2, 1);  // Sala 1 <-> Sala 2
-        network.addEdge(room1, room3, 1);  // Sala 1 <-> Sala 3
-        network.addEdge(room2, room4, 1);  // Sala 2 <-> Sala 4
-        network.addEdge(room2, room5, 1);  // Sala 2 <-> Sala 5
-        network.addEdge(room3, room6, 1);  // Sala 3 <-> Sala 6
-        network.addEdge(room4, room7, 1);  // Sala 4 <-> Sala 7
-        network.addEdge(room5, room7, 1);  // Sala 5 <-> Sala 7
-        network.addEdge(room6, room7, 1);  // Sala 6 <-> Sala 7
+        // Inicializa o agente (personagem principal)
+        Agent agent = new Agent();
 
-        // Criar o inimigo e definir a sala inicial
-        Enemy enemy = new Enemy("Inimigo 1", 10, room1);  // Começa na Sala 1
 
-        System.out.println("Inimigo inicializado na sala: " + enemy.getRoom().getName());
+        // Definir o primeiro turno do jogo
+        Scanner scanner = new Scanner(System.in);
+        boolean gameRunning = true;
 
-        // Testar o movimento aleatório do inimigo
-        enemy.moveRandomly(network);
+        while (gameRunning) {
+            System.out.println("\nTurno do Agente: " + agent.getName());
+            System.out.println("Sala Atual: " + agent.getCurrentRoom().getName());
+            System.out.println("1. Mover-se");
+            System.out.println("2. Usar item de recuperação");
+            System.out.println("3. Atacar inimigos");
+            System.out.println("4. Interagir com o alvo");
+            System.out.println("5. Sair do jogo");
+            System.out.print("Escolha sua ação: ");
+            int action = scanner.nextInt();
 
-        // Exibir a nova sala do inimigo após o movimento
-        System.out.println("Inimigo se moveu para a sala: " + enemy.getRoom().getName());
+            // Processar a ação do jogador
+            switch (action) {
+                case 1:
+                    simulator.processAgentTurn(); // Processa o turno do agente
+                    break;
 
-        // Testar o movimento aleatório mais uma vez
-        enemy.moveRandomly(network);
-        System.out.println("Inimigo se moveu para a sala: " + enemy.getRoom().getName());
+                case 2:
+                    simulator.processItemUse(); // Usa um item de recuperação (HealthKit)
+                    break;
+
+                case 3:
+                    Room currentRoom = agent.getCurrentRoom();
+                    if (!currentRoom.getEnemies().isEmpty()) {
+                        simulator.processCombat(currentRoom); // Inicia o combate
+                    } else {
+                        System.out.println("Não há inimigos na sala para atacar.");
+                    }
+                    break;
+
+                case 4:
+                    simulator.processTargetInteraction(); // Interage com o alvo
+                    break;
+
+                case 5:
+                    System.out.println("Saindo do jogo...");
+                    gameRunning = false;
+                    break;
+
+                default:
+                    System.out.println("Opção inválida! Tente novamente.");
+            }
+
+            // Processar o turno dos inimigos após o turno do agente
+            simulator.processEnemiesTurn();
+
+            // Verificar se o jogo acabou
+            if (agent.getHealth() <= 0) {
+                System.out.println("O Agente foi derrotado. Fim de jogo.");
+                gameRunning = false;
+            }
+
+            if (mission.getTarget().isRescued()) {
+                System.out.println("Missão completada com sucesso! O alvo foi resgatado.");
+                gameRunning = false;
+            }
+        }
+
+        scanner.close();
     }
 }
