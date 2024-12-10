@@ -62,12 +62,25 @@ public class Building {
     public void visualizeGraph() {
         System.setProperty("org.graphstream.ui", "swing");
 
+        // Cria o grafo
         Graph graph = new SingleGraph("Building Map");
 
         // Adiciona os nós (salas)
         for (Room room : rooms) {
             Node node = graph.addNode(room.getName());
-            node.addAttribute("ui.label", room.getName());
+            String nodeLabel = room.getName();  // Começa com o nome da sala
+
+            // Verifica se há inimigos e altera o estilo do nó (cor e formato)
+            if (!room.getEnemies().isEmpty()) {
+                int numEnemies = room.getEnemies().size();  // Número de inimigos na sala
+                nodeLabel += " (" + numEnemies + " inimigos)";  // Adiciona o número de inimigos ao rótulo
+                node.addAttribute("ui.style", "shape: box; fill-color: red; size: 50px, 50px; text-alignment: center; text-size: 15px;");
+            } else {
+                node.addAttribute("ui.style", "shape: box; fill-color: green; size: 50px, 50px; text-alignment: center; text-size: 15px;");
+            }
+
+            // Define o rótulo do nó com o nome da sala e o número de inimigos, se aplicável
+            node.addAttribute("ui.label", nodeLabel);
         }
 
         // Adiciona as arestas (ligações) com pesos
@@ -82,11 +95,16 @@ public class Building {
             }
         }
 
-        // Configurações de visualização
-        graph.addAttribute("ui.stylesheet", "node { text-size: 20; } edge { text-size: 15; }");
+        // Definindo o layout
+        graph.addAttribute("ui.stylesheet", "node { text-size: 15; shape: box; fill-color: #A0C4FF; } edge { fill-color: #666; size: 2px; }");
+
+        // Layout de grid para as salas se posicionarem como uma planta
+        graph.addAttribute("layout.force", 1.0);
+        graph.addAttribute("layout.grid", true);
+
+        // Exibe o gráfico
         graph.display();
     }
-
     public UnorderedListADT<Connection> getConnections() {
         return connections;
     }

@@ -5,6 +5,7 @@ import Game.Item.HealthKit;
 import Game.Item.Item;
 import Game.Player.Agent;
 import Game.Player.Enemy;
+import Structures.collections.graphs.Network;
 
 public class MissionSimulator {
     private Mission mission;
@@ -20,7 +21,7 @@ public class MissionSimulator {
 
     //Atualiza pesos das arestas (calculateWeight());
 
-    private void processAgentTurn() {
+    public void processAgentTurn() {
         Room currentRoom = agent.getCurrentRoom();
 
         if (!currentRoom.getEnemies().isEmpty()) {
@@ -53,7 +54,8 @@ public class MissionSimulator {
     }
 
 
-    private void processCombat(Room room) {
+    public void processCombat(Room room) {
+        Network<Room> buildingNetwork = mission.getBuilding().getMap();
         System.out.println("Combat initiated in division: " + room.getName());
 
         // Cenário 1: Fase do jogador (Tó Cruz ataca os inimigos que estão na sala)
@@ -76,7 +78,7 @@ public class MissionSimulator {
         for (Enemy enemy : room.getEnemies()) {
             agent.takeDamage(enemy.getPower());
             System.out.println("Agent took damage. Current health: " + agent.getHealth());
-            enemy.moveRandomly(mission.getBuilding());
+            enemy.moveRandomly(buildingNetwork);
 
             if (agent.getHealth() <= 0) {
                 System.out.println("Agent has been defeated! Game Over.");
@@ -86,12 +88,13 @@ public class MissionSimulator {
     }
 
 
-    private void processEnemiesTurn() {
+    public void processEnemiesTurn() {
+        Network<Room> buildingNetwork = mission.getBuilding().getMap();
         // Movimentação dos inimigos (Cenário 2: Sala sem inimigos, inimigos se movem aleatoriamente)
         for (Room room : mission.getBuilding().getRooms()) {
             for (Enemy enemy : room.getEnemies()) {
                 if (!room.equals(agent.getCurrentRoom())) {
-                    enemy.moveRandomly(mission.getBuilding()); // Movimenta apenas inimigos fora da sala do agente
+                    enemy.moveRandomly(buildingNetwork); // Movimenta apenas inimigos fora da sala do agente
                 }
             }
         }
@@ -118,7 +121,7 @@ public class MissionSimulator {
     }
 
 
-    private void processItemUse() {
+    public void processItemUse() {
         if (!agent.getInventory().isEmpty()) {
             HealthKit kit = agent.getInventory().pop();
             int healingPoints = kit.getPointsRecovered();
@@ -132,7 +135,7 @@ public class MissionSimulator {
     }
 
 
-    private void processTargetInteraction() {
+    public void processTargetInteraction() {
         // Cenário 5: Alvo com inimigos na sala
         if (!agent.getCurrentRoom().getEnemies().isEmpty()) {
             System.out.println("Enemies must be defeated before interacting with the target!");

@@ -1,6 +1,14 @@
 package Game.Player;
 
 import Game.Room;
+import Structures.collections.graphs.Network;
+import Structures.collections.lists.ArrayOrderedList;
+import Structures.collections.lists.ArrayUnorderedList;
+import Structures.collections.lists.ListADT;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Random;
 
 
 public class Enemy {
@@ -53,6 +61,41 @@ public class Enemy {
     public void takeDamage(int damage) {
         heatlh -= damage;
     }
+
+    public void moveRandomly(Network<Room> network) {
+        Room currentRoom = this.getRoom();
+
+        // Obtém um iterador para os vértices (salas) na rede
+        Iterator<Room> iterator = network.vertexIterator();
+
+        // Armazena as salas vizinhas
+        ArrayUnorderedList<Room> adjacentRooms = new ArrayUnorderedList<>();
+
+        // Percorre os vértices adjacentes
+        while (iterator.hasNext()) {
+            Room adjacentRoom = iterator.next();
+
+            // Verifica se existe uma aresta entre as duas salas (i.e., se são vizinhas)
+            if (network.getWeight(currentRoom, adjacentRoom) != Double.POSITIVE_INFINITY) {
+                adjacentRooms.addToRear(adjacentRoom);  // Adiciona a sala vizinha
+            }
+        }
+
+        // Verifica se há salas vizinhas
+        if (adjacentRooms.isEmpty()) {
+            System.out.println(name + " não pode se mover. Nenhuma sala vizinha encontrada.");
+            return; // Não move se não houver salas vizinhas
+        }
+
+        // Escolhe aleatoriamente uma sala vizinha usando Random
+        Random rand = new Random();
+        Room newRoom = adjacentRooms.get(rand.nextInt(adjacentRooms.size()));
+
+        // Move o inimigo para a nova sala
+        this.setRoom(newRoom);
+        System.out.println(name + " se moveu para " + newRoom.getName());
+    }
+
 /*
     @Override
     public String toString() {

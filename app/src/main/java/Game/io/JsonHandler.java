@@ -81,6 +81,13 @@ public class JsonHandler {
             String codMissao = (String) jsonObject.get("cod-missao");
             Mission mission = new Mission(codMissao, version, alvo, building);
 
+            JSONArray entradasSaidas = (JSONArray) jsonObject.get("entradas-saidas");
+            for (Room room : building.getRooms()) {
+                if (entradasSaidas.contains(room.getName())) {
+                    room.setClassification("entrada-saida");
+                }
+            }
+
             return building;
         } catch (IOException | ParseException e) {
             e.printStackTrace();

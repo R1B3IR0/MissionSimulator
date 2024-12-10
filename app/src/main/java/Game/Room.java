@@ -9,13 +9,23 @@ import java.util.Iterator;
 
 public class Room {
     private String name;
+    private String classification;
     private UnorderedListADT<Enemy> enemies;
     private UnorderedListADT<Item> items;
 
     public Room(String name) {
         this.name = name;
+        this.classification = "normal";
         this.enemies = new ArrayUnorderedList<>();
         this.items = new ArrayUnorderedList<>();
+    }
+
+    public String getClassification() {
+        return classification;
+    }
+
+    public void setClassification(String classification) {
+        this.classification = classification;
     }
 
     public String getName() {

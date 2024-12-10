@@ -247,6 +247,22 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         }
         return distances[targetIndex];
     }
+    //Iterator novo
+    public Iterator<T> vertexIterator() {
+        return new Iterator<T>() {
+            private int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < numVertices;  // Verifica se há mais vértices
+            }
+
+            @Override
+            public T next() {
+                return vertices[index++];  // Retorna o próximo vértice
+            }
+        };
+    }
 
     /**
      * Finds the vertex with the minimum distance that has not been visited.
@@ -267,4 +283,5 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         }
         return minIndex;
     }
+
 }
