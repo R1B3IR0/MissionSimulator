@@ -49,13 +49,18 @@ public class Enemy {
     public void setHeatlh(int heatlh) {
         this.heatlh = heatlh;
     }
-
+/*
     @Override
     public String toString() {
-        return
-                "Nome=" + name  + " " +
-                "Poder=" + power ;
+        String text = "";
+
+        text += "Nome: " + name + "\n";
+        text += "Vida: " + heatlh + "\n";
+        text += "Ataque: " + power + "\n";
+        text += "Divisão: " + room.toString() + "\n";
+
+        return text;
     }
-
-
+ */
+    
 }

@@ -108,6 +108,18 @@ public class Graph<T> implements GraphADT<T> {
         }
     }
 
+    // Verifica se já existe uma aresta entre dois vertices
+    public boolean edgeExists(T vertex1, T vertex2) {
+        int index1 = getIndex(vertex1);
+        int index2 = getIndex(vertex2);
+
+        if (indexIsValid(index1) && indexIsValid(index2)) {
+            return adjMatrix[index1][index2];
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Retrieves the index of the vertex with the specified value in the graph.
      *

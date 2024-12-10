@@ -3,11 +3,14 @@ package Game;
 import Game.Player.Enemy;
 import Game.Item.Item;
 import Structures.collections.lists.ArrayUnorderedList;
+import Structures.collections.lists.UnorderedListADT;
+
+import java.util.Iterator;
 
 public class Room {
     private String name;
-    private ArrayUnorderedList<Enemy> enemies;
-    private ArrayUnorderedList<Item> items;
+    private UnorderedListADT<Enemy> enemies;
+    private UnorderedListADT<Item> items;
 
     public Room(String name) {
         this.name = name;
@@ -19,42 +22,60 @@ public class Room {
         return name;
     }
 
-
+    /**
+     * Adiciona um inimigo à sala
+     * @param enemy
+     */
     public void addEnemy(Enemy enemy) {
         enemies.addToRear(enemy);
     }
 
-
+    /**
+     * Adiciona um item à sala
+     * @param item
+     */
     public void addItem(Item item) {
         items.addToRear(item);
     }
 
-
-    public ArrayUnorderedList<Enemy> getEnemies() {
+    public UnorderedListADT<Enemy> getEnemies() {
         return enemies;
     }
 
-
-    public ArrayUnorderedList<Item> getItems() {
+    public UnorderedListADT<Item> getItems() {
         return items;
     }
 
-
-
-
-    @Override
-    public String toString() {
-        System.out.println();
-        System.out.println("Sala: " + name);
-        System.out.print("Inimigos: ");
-        enemies.forEach(enemy -> System.out.print(enemy.toString() + " "));
-        System.out.println();
-
-        System.out.print("Itens: ");
-        items.forEach(item -> System.out.print(item.toString() + " "));
-        System.out.println();
-
-        return "";
+    public void setEnemies(UnorderedListADT<Enemy> enemies) {
+        this.enemies = enemies;
     }
 
+    public void setItems(UnorderedListADT<Item> items) {
+        this.items = items;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+/*
+    @Override
+    public String toString() {
+        StringBuilder text = new StringBuilder();
+
+        text.append("Divisão: ").append(name).append("\n");
+        text.append("Inimigos: ");
+        Iterator<Enemy> enemyIterator = enemies.iterator();
+        while (enemyIterator.hasNext()) {
+            text.append(enemyIterator.next().toString()).append(", ");
+        }
+        text.append("\nItens: ");
+        Iterator<Item> itemIterator = items.iterator();
+        while (itemIterator.hasNext()) {
+            text.append(itemIterator.next().toString()).append(", ");
+        }
+
+        return text.toString();
+    }
+ */
 }
+

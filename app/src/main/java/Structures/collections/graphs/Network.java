@@ -131,6 +131,10 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         if (indexIsValid(index1) && indexIsValid(index2)) {
             adjMatrix[index1][index2] = true;
             weightMatrix[index1][index2] = weight;
+
+            // If the network is bidirectional, add the reverse edge as well
+            adjMatrix[index2][index1] = true;
+            weightMatrix[index2][index1] = weight;
         }
     }
 

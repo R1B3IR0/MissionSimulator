@@ -149,7 +149,7 @@ public abstract class DoubleLinkedList<T> implements ListADT<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new DoubleLinkedIterator<>();
+        return new DoubleLinkedIterator();
     }
 
     @Override
@@ -165,13 +165,13 @@ public abstract class DoubleLinkedList<T> implements ListADT<T> {
         return str.toString().trim();
     }
 
-    private class DoubleLinkedIterator<E> implements Iterator<E> {
-        private DoubleLinearNode<E> current;
+    private class DoubleLinkedIterator implements Iterator<T> {
+        private DoubleLinearNode<T> current;
         private int expectedModCount;
         private boolean okToRemove;
 
         public DoubleLinkedIterator() {
-            current = (DoubleLinearNode<E>) head;
+            current = head;
             expectedModCount = modcount;
             okToRemove = false;
         }
@@ -182,7 +182,7 @@ public abstract class DoubleLinkedList<T> implements ListADT<T> {
         }
 
         @Override
-        public E next() {
+        public T next() {
             if(modcount != expectedModCount) {
                 throw new ConcurrentModificationException("A lista foi modificada fora do iterador");
             }
@@ -192,7 +192,7 @@ public abstract class DoubleLinkedList<T> implements ListADT<T> {
             }
 
             okToRemove = true;
-            E element = current.getElement();
+            T element = current.getElement();
             current = current.getNext(); // Avança para o próximo nó
 
             return element;
@@ -209,7 +209,7 @@ public abstract class DoubleLinkedList<T> implements ListADT<T> {
             }
 
             okToRemove = false;
-            DoubleLinkedList.this.remove((T) current.getPrevious().getElement());
+            DoubleLinkedList.this.remove(current.getPrevious().getElement());
             expectedModCount++;
 
         }

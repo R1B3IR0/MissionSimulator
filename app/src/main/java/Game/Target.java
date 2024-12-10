@@ -29,8 +29,8 @@ public class Target {
     public String toString() {
         String text = "";
 
-        text += "Tipo: " + tipo + "\n";
-        text += "Divisão: " + room.toString() + "\n";
+        text += "\n   Tipo: " + tipo + "\n";
+        text += "   Divisao: " + room.getName() + "\n";
 
         return text;
     }

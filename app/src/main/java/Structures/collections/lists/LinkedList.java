@@ -155,18 +155,18 @@ public abstract class LinkedList<T> implements ListADT<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new LinkedListIterator<>();
+        return new LinkedListIterator();
     }
 
-    private class LinkedListIterator<E> implements Iterator<E> {
-        private LinearNode<E> previous;
-        private LinearNode<E> current;
+    private class LinkedListIterator implements Iterator<T> {
+        private LinearNode<T> previous;
+        private LinearNode<T> current;
         private int expectedModCount;
         private boolean okToRemove;
 
         public LinkedListIterator() {
             previous = null;
-            current = (LinearNode<E>) head;
+            current = head;
             expectedModCount = modcount;
             okToRemove = false;
         }
@@ -177,7 +177,7 @@ public abstract class LinkedList<T> implements ListADT<T> {
         }
 
         @Override
-        public E next() {
+        public T next() {
             if(modcount != expectedModCount) {
                 throw new ConcurrentModificationException("A lista foi modificada fora do iterador");
             }
@@ -187,7 +187,7 @@ public abstract class LinkedList<T> implements ListADT<T> {
             }
 
             okToRemove = true;
-            E element = current.getElement();
+            T element = current.getElement();
             previous = current;
             current = current.getNext();
 

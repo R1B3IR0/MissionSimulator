@@ -1,5 +1,5 @@
 package Game;
-
+/*
 public class Version {
     private int version;
     private Building building;
@@ -29,8 +29,9 @@ public class Version {
     public String toString() {
         String text = "";
 
-        text += "Edifício: " + building.toString() + "\n";
+        text += "Versão: " + version + "\n";
 
         return text;
     }
 }
+*/

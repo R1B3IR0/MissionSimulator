@@ -3,20 +3,22 @@ package Game;
 public class Mission {
 
     private String codMissao;
-    private Version versao;     // Auto-incremental?
-    private Target alvo;
+    private int version;     // Auto-incremental?
+    private Target target;
+    private Building building;
 
 
-    public Mission(String codMissao, Version versao, Target alvo) {
+    public Mission(String codMissao, int version, Target target, Building building) {
         this.codMissao = codMissao;
-        this.versao = versao;
-        this.alvo = alvo;
+        this.version = version;
+        this.target = target;
+        this.building = building;
     }
 
     public Mission() {
         this.codMissao = "";
-        this.versao = null;
-        this.alvo = null;
+        this.version = 0;
+        this.target = null;
 
     }
 
@@ -29,20 +31,20 @@ public class Mission {
         this.codMissao = codMissao;
     }
 
-    public Version getVersao() {
-        return versao;
+    public int getVersion() {
+        return version;
     }
 
-    public void setVersao(Version versao) {
-        this.versao = versao;
+    public void setVersion(int version) {
+        this.version = version;
     }
 
-    public Target getAlvo() {
-        return alvo;
+    public Target getTarget() {
+        return target;
     }
 
-    public void setAlvo(Target alvo) {
-        this.alvo = alvo;
+    public void setTarget(Target target) {
+        this.target = target;
     }
 
 
@@ -50,9 +52,10 @@ public class Mission {
     public String toString() {
         String text = "";
 
-        text += "Código da Missão: " + codMissao + "\n";
-        text += "Versão: " + versao.toString() + "\n";
-        text += "Alvo: " + alvo.toString() + "\n";
+        text += "Codigo da Missao: " + codMissao + "\n";
+        text += "Versao: " + version + "\n";
+        text += "Alvo: " + target.toString() + "\n";
+        text += "Edificio: " + building.toString() + "\n";
 
         return text;
     }
