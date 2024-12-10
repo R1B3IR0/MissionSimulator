@@ -20,14 +20,9 @@ public class BulletProofVest extends Item {
         this.extraPoints = extraPoints;
     }
 
-    @Override
-    public void applyKit() {
-        Agent agent = new Agent();
-
+    public void applyKit(Agent agent) { // Agora o colete aplica os pontos ao agente fornecido
         int health = agent.getHealth();
-
         health += extraPoints;
-
         agent.setHealth(health);
 
         System.out.println("Colete à prova de bala com " + extraPoints + " pontos adicionado.");

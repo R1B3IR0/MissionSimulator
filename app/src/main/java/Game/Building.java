@@ -21,6 +21,8 @@ public class Building {
         this.map = new Network<>();
     }
 
+
+
     public void generateMap() {
         for (Room room : rooms) {
             map.addVertex(room);

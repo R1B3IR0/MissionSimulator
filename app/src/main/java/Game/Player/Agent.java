@@ -1,9 +1,9 @@
 package Game.Player;
 
+import Game.Item.HealthKit;
 import Game.Item.Item;
 import Game.Room;
 import Structures.collections.stacks.ArrayStack;
-import Structures.collections.stacks.LinkedStack;
 
 public class Agent{
 
@@ -12,7 +12,7 @@ public class Agent{
     private final int MAXHEALTH = 100;
     private int power;
     /** Mochila para armazenar os kits do agente */
-    private ArrayStack<Item> inventory;
+    private ArrayStack<HealthKit> inventory;
     private Room currentRoom;
 
 
@@ -37,7 +37,7 @@ public class Agent{
         return MAXHEALTH;
     }
 
-    public ArrayStack<Item> getInventory() {
+    public ArrayStack<HealthKit> getInventory() {
         return inventory;
     }
 
@@ -49,7 +49,7 @@ public class Agent{
         this.health = health;
     }
 
-    public void setInventory(ArrayStack<Item> inventory) {
+    public void setInventory(ArrayStack<HealthKit> inventory) {
         this.inventory = inventory;
     }
 
@@ -63,6 +63,14 @@ public class Agent{
 
     public void setPower(int power) {
         this.power = power;
+    }
+
+    public void takeDamage(int damage) {
+        this.health -= damage;
+    }
+
+    public boolean isOutsideBuilding() {
+        return currentRoom == null;
     }
 
     @Override

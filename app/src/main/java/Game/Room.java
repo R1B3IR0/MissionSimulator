@@ -57,6 +57,19 @@ public class Room {
     public void setName(String name) {
         this.name = name;
     }
+
+    public void removeEnemy(Enemy enemy) {
+        enemies.remove(enemy);
+    }
+    public void removeItem(Item item) {
+        if (items.contains(item)) {
+            items.remove(item);
+            System.out.println(item.getType() + " has been removed from the room.");
+        } else {
+            System.out.println("Item not found in the room.");
+        }
+    }
+
 /*
     @Override
     public String toString() {

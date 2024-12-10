@@ -7,6 +7,8 @@ public class Mission {
     private Target target;
     private Building building;
 
+
+
     public Mission(String codMissao, int version, Target target, Building building) {
         this.codMissao = codMissao;
         this.version = version;
@@ -18,6 +20,7 @@ public class Mission {
         this.codMissao = "";
         this.version = 0;
         this.target = null;
+        this.building = new Building();
 
     }
 
@@ -46,6 +49,13 @@ public class Mission {
         this.target = target;
     }
 
+    public Building getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(Building building) {
+        this.building = building;
+    }
 
     @Override
     public String toString() {

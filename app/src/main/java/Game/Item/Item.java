@@ -1,5 +1,6 @@
 package Game.Item;
 
+import Game.Player.Agent;
 import Game.Room;
 
 public abstract class Item {
@@ -27,7 +28,7 @@ public abstract class Item {
         this.type = type;
     }
 
-    public abstract void applyKit();
+    public abstract void applyKit(Agent agent);
 
     @Override
     public String toString() {

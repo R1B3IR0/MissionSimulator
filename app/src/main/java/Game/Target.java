@@ -3,10 +3,19 @@ package Game;
 public class Target {
     private String tipo;
     private Room room;
+    private boolean rescued;
 
     public Target(String tipo, Room room) {
         this.tipo = tipo;
         this.room = room;
+    }
+
+    public boolean isRescued() {
+        return rescued;
+    }
+
+    public void rescue() {
+        this.rescued = true;
     }
 
     public String getTipo() {

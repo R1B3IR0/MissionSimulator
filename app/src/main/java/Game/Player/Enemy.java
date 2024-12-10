@@ -49,6 +49,10 @@ public class Enemy {
     public void setHeatlh(int heatlh) {
         this.heatlh = heatlh;
     }
+
+    public void takeDamage(int damage) {
+        heatlh -= damage;
+    }
 /*
     @Override
     public String toString() {
