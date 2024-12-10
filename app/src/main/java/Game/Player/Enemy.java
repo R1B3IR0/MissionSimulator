@@ -75,10 +75,19 @@ public class Enemy {
         while (iterator.hasNext()) {
             Room adjacentRoom = iterator.next();
 
-            // Verifica se existe uma aresta entre as duas salas (i.e., se são vizinhas)
+            // Verifica se existe uma aresta entre as duas salas
             if (network.getWeight(currentRoom, adjacentRoom) != Double.POSITIVE_INFINITY) {
                 adjacentRooms.addToRear(adjacentRoom);  // Adiciona a sala vizinha
             }
+        }
+
+        // Limita a lista de salas vizinhas a no máximo 2
+        if (adjacentRooms.size() > 2) {
+            ArrayUnorderedList<Room> limitedAdjacentRooms = new ArrayUnorderedList<>();
+            for (int i = 0; i < 2; i++) {
+                limitedAdjacentRooms.addToRear(adjacentRooms.get(i));
+            }
+            adjacentRooms = limitedAdjacentRooms;
         }
 
         // Verifica se há salas vizinhas
@@ -95,6 +104,7 @@ public class Enemy {
         this.setRoom(newRoom);
         System.out.println(name + " se moveu para " + newRoom.getName());
     }
+
 
 /*
     @Override
