@@ -62,6 +62,10 @@ public class Enemy {
         heatlh -= damage;
     }
 
+    /**
+     *  Enemies move randomly up to two divisions from your position.
+     * @param network
+     */
     public void moveRandomly(Network<Room> network) {
         Room currentRoom = this.getRoom();
 
