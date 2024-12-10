@@ -3,10 +3,9 @@ package Game;
 public class Mission {
 
     private String codMissao;
-    private int version;     // Auto-incremental?
+    private int version;
     private Target target;
     private Building building;
-
 
     public Mission(String codMissao, int version, Target target, Building building) {
         this.codMissao = codMissao;

@@ -19,7 +19,6 @@ public class Main {
         // Gera o mapa
         building.generateMap();
         building.visualizeGraph();
-        building.getMap().toString();
 
 
         if (building.getMap() != null && !building.getMap().toString().isEmpty()) {
