@@ -1,10 +1,12 @@
-import Game.*;
+import Game.Building;
+import Game.Mission;
+import Game.MissionSimulator;
 import Game.Player.Agent;
+import Game.Room;
 import Game.io.JsonHandler;
 import Structures.collections.lists.ArrayUnorderedList;
 
 import java.util.Scanner;
-import java.util.List;
 
 public class Main {
 
@@ -50,7 +52,6 @@ public class Main {
         agent.setCurrentRoom(chosenRoom);
         System.out.println("Agente começou na sala: " + chosenRoom.getName());
 
-        // Definir o primeiro turno do jogo
         boolean gameRunning = true;
 
         while (gameRunning) {
@@ -64,25 +65,20 @@ public class Main {
             System.out.print("Escolha sua ação: ");
             int action = scanner.nextInt();
 
-            // Processar a ação do jogador
+
             switch (action) {
                 case 1:
-                    simulator.processAgentTurn(); // Processa o turno do agente
+                    simulator.processAgentTurn(); //Isto esta mal
                     break;
 
                 case 2:
-                    simulator.processItemUse(); // Usa um item de recuperação (HealthKit)
+                    simulator.processItemUse();
                     break;
 
                 case 3:
                     Room currentRoom = agent.getCurrentRoom();
-                    if (!currentRoom.getEnemies().isEmpty()) {
-                        simulator.processCombat(currentRoom); // Inicia o combate
-                    } else {
-                        System.out.println("Não há inimigos na sala para atacar.");
-                    }
+                    simulator.processCombat(currentRoom); //Verifica se consegue combater
                     break;
-
                 case 4:
                     simulator.processTargetInteraction(); // Interage com o alvo
                     break;

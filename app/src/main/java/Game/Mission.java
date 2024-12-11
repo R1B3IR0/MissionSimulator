@@ -19,6 +19,7 @@ public class Mission {
     public Mission() {
         this.codMissao = "";
         this.version = 0;
+        this.target = null;
         this.building = new Building();
 
     }
@@ -26,6 +27,7 @@ public class Mission {
     public Mission(Building building) {
         this.codMissao = "";
         this.version = 0;
+        this.target = null;
         this.building = new Building();
     }
 

@@ -23,9 +23,8 @@ public class MissionSimulator {
 
     }
 
-    //Atualiza pesos das arestas (calculateWeight());
-
     public void processAgentTurn() {
+
         Room currentRoom = agent.getCurrentRoom(); // O Tó Cruz está na sala atual
 
         if (!currentRoom.getEnemies().isEmpty()) {
@@ -35,7 +34,6 @@ public class MissionSimulator {
         } else {
             System.out.println("No enemies in the room. Choose your next action.");
         }
-
         // Verificar os itens na sala
         Iterator<Item> iterator = currentRoom.getItems().iterator();
         while (iterator.hasNext()) {
@@ -85,7 +83,7 @@ public class MissionSimulator {
             return;
         }
 
-        Iterator<Enemy> enemyIterator = room.getEnemies().iterator();
+       /* Iterator<Enemy> enemyIterator = room.getEnemies().iterator();
         while (enemyIterator.hasNext()) {
             Enemy enemy = enemyIterator.next();
             agent.takeDamage(enemy.getPower());
@@ -95,7 +93,9 @@ public class MissionSimulator {
                 System.out.println("Agent has been defeated! Game Over.");
                 return;
             }
-        }
+        }*/
+
+        //Move os inimigos
         if (!enemiesMovedThisTurn) {
             for (Room r : mission.getBuilding().getRooms()) {
                 if (!r.equals(agent.getCurrentRoom())) {
@@ -106,7 +106,7 @@ public class MissionSimulator {
                     }
                 }
             }
-            enemiesMovedThisTurn = true;  // Marca que os inimigos se moveram nesta ronda
+            enemiesMovedThisTurn = true;
         }
     }
 
@@ -181,7 +181,7 @@ public class MissionSimulator {
 
 
         if (!currentRoom.isEntryExit()) {
-            System.out.println("You need to be in a room classified as 'entry-exit' to leave the building.");
+            System.out.println("You need to be in a room classified as 'entrada-saida' to leave the building.");
             return;
         }
 
