@@ -1,9 +1,10 @@
 import Game.*;
 import Game.Player.Agent;
 import Game.io.JsonHandler;
-
+import Structures.collections.lists.ArrayUnorderedList;
 
 import java.util.Scanner;
+import java.util.List;
 
 public class Main {
 
@@ -14,18 +15,42 @@ public class Main {
         // Carrega a missão a partir do JSON
         Building building = JsonHandler.importJson(filePath);
         Mission mission = new Mission(building);  // Criando a missão com o edifício carregado
-        MissionSimulator simulator = new MissionSimulator(mission); // Simulador de missão
+        Agent agent = new Agent();
+        MissionSimulator simulator = new MissionSimulator(mission, agent); // Simulador de missão
 
         // Gerar e visualizar o mapa do edifício
         building.generateMap();
         building.visualizeGraph();
 
         // Inicializa o agente (personagem principal)
-        Agent agent = new Agent();
 
+        // Escolher a sala inicial
+        ArrayUnorderedList<Room> entryExitRooms = building.getRoomsWithEntryExit();
+
+        if (entryExitRooms.isEmpty()) {
+            System.out.println("Nenhuma sala de entrada-saída encontrada!");
+            return;  // Encerra o jogo caso não haja salas de entrada-saída
+        }
+
+        // Exibe as opções de salas para o agente escolher
+        System.out.println("Escolha uma sala de entrada-saída para começar:");
+        for (int i = 0; i < entryExitRooms.size(); i++) {
+            System.out.println((i + 1) + ". " + entryExitRooms.get(i).getName());
+        }
+
+        // O agente escolhe uma sala
+        Scanner scanner = new Scanner(System.in);
+        int chosenRoomIndex = scanner.nextInt() - 1;  // Ajusta para índice zero
+        if (chosenRoomIndex < 0 || chosenRoomIndex >= entryExitRooms.size()) {
+            System.out.println("Escolha inválida. O jogo será encerrado.");
+            return;
+        }
+
+        Room chosenRoom = entryExitRooms.get(chosenRoomIndex);
+        agent.setCurrentRoom(chosenRoom);
+        System.out.println("Agente começou na sala: " + chosenRoom.getName());
 
         // Definir o primeiro turno do jogo
-        Scanner scanner = new Scanner(System.in);
         boolean gameRunning = true;
 
         while (gameRunning) {

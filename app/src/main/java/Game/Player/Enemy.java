@@ -3,12 +3,9 @@ package Game.Player;
 import Game.Building;
 import Game.Room;
 import Structures.collections.graphs.Network;
-import Structures.collections.lists.ArrayOrderedList;
 import Structures.collections.lists.ArrayUnorderedList;
-import Structures.collections.lists.ListADT;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Random;
 
 
@@ -64,7 +61,8 @@ public class Enemy {
     }
 
     /**
-     *  Enemies move randomly up to two divisions from your position.
+     * Enemies move randomly up to two divisions from your position.
+     *
      * @param network
      */
     public void moveRandomly(Network<Room> network, Building building) {
@@ -122,6 +120,8 @@ public class Enemy {
     }
 
 
+
+
 /*
     @Override
     public String toString() {
@@ -135,5 +135,5 @@ public class Enemy {
         return text;
     }
  */
-    
+
 }

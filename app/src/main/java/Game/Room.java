@@ -15,7 +15,7 @@ public class Room {
 
     public Room(String name) {
         this.name = name;
-        this.classification = null;
+        this.classification = "normal";
         this.enemies = new ArrayUnorderedList<>();
         this.items = new ArrayUnorderedList<>();
     }
@@ -80,6 +80,15 @@ public class Room {
             System.out.println("Item not found in the room.");
         }
     }
+    public boolean isEntryExit() {
+        return "entrada-saida".equalsIgnoreCase(classification);
+    }
+
+    public boolean isNormalRoom() {
+        return "normal".equalsIgnoreCase(classification);
+    }
+
+
 
 /*
     @Override

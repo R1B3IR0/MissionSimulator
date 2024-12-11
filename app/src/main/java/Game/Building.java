@@ -2,6 +2,7 @@ package Game;
 
 import Game.Player.Enemy;
 import Structures.collections.graphs.Network;
+import Structures.collections.lists.ArrayUnorderedList;
 import Structures.collections.lists.UnorderedLinkedList;
 import Structures.collections.lists.UnorderedListADT;
 import org.graphstream.graph.Graph;
@@ -144,6 +145,16 @@ public class Building {
 
     public void setMap(Network<Room> map) {
         this.map = map;
+    }
+
+    public ArrayUnorderedList<Room> getRoomsWithEntryExit() {
+        ArrayUnorderedList<Room> roomsWithEntryExit = new ArrayUnorderedList<>();
+        for (Room room : rooms) {
+            if (room.isEntryExit()) {
+                roomsWithEntryExit.addToRear(room);
+            }
+        }
+        return roomsWithEntryExit;
     }
 
     @Override

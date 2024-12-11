@@ -20,7 +20,6 @@ public class Agent{
         this.name = "Tó Cruz";
         this.health = MAXHEALTH;
         this.inventory = new ArrayStack<>(2);
-        this.currentRoom = null;
         this.power = 50;
     }
 
@@ -73,8 +72,10 @@ public class Agent{
         return currentRoom == null;
     }
 
-    @Override
-    public String toString() {
+
+   /*
+        @Override
+        public String toString() {
         String text = "";
 
         text += "Nome: " + name + "\n";
@@ -84,5 +85,5 @@ public class Agent{
         text += "Divisão atual: " + currentRoom.toString() + "\n";
 
         return text;
-    }
+    }*/
 }

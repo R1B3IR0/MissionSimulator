@@ -7,15 +7,19 @@ import Game.Player.Agent;
 import Game.Player.Enemy;
 import Structures.collections.graphs.Network;
 
+import java.util.Iterator;
+
 public class MissionSimulator {
     private Mission mission;
     private Agent agent;
     private Target target;
+    private boolean enemiesMovedThisTurn;
 
-    public MissionSimulator(Mission mission) {
+    public MissionSimulator(Mission mission, Agent agent) {
         this.mission = mission;
-        this.agent = new Agent();
+        this.agent = agent;
         this.target = mission.getTarget();
+        this.enemiesMovedThisTurn = false;
 
     }
 
@@ -33,39 +37,44 @@ public class MissionSimulator {
         }
 
         // Verificar os itens na sala
-        for (Item item : currentRoom.getItems()) {
+        Iterator<Item> iterator = currentRoom.getItems().iterator();
+        while (iterator.hasNext()) {
+            Item item = iterator.next();
             if (item instanceof BulletProofVest) {
-                // Se o agente encontrar um colete, ele usa automaticamente
                 BulletProofVest vest = (BulletProofVest) item;
-                vest.applyKit(agent);  // Aplica os pontos de vida do colete diretamente no agente
-                currentRoom.removeItem(item);  // Remove o colete da sala após o uso
+                vest.applyKit(agent); // Aplica o colete no agente
+                iterator.remove(); // Remove com segurança o colete da sala
                 System.out.println("BulletProofVest used and applied to agent.");
-                break;  // O colete é usado uma vez e removido
+                break; // O colete foi usado, não precisa continuar iterando
             } else if (item instanceof HealthKit) {
                 if (agent.getInventory().size() < 2) {
-                    agent.getInventory().push((HealthKit) item);  // Adiciona o HealthKit ao inventário
-                    currentRoom.removeItem(item);  // Remove o HealthKit da sala após armazenar
+                    agent.getInventory().push((HealthKit) item); // Adiciona o HealthKit ao inventário
+                    iterator.remove(); // Remove o HealthKit com segurança
                     System.out.println("HealthKit stored in inventory.");
                 } else {
-                    System.out.println("Backpack is full !");
+                    System.out.println("Backpack is full!");
                 }
             }
         }
+
     }
 
 
     public void processCombat(Room room) {
         Network<Room> buildingNetwork = mission.getBuilding().getMap();
         System.out.println("Combat initiated in division: " + room.getName());
+        Iterator<Enemy> iterator = room.getEnemies().iterator();
+
 
         // Cenário 1: Fase do jogador (Tó Cruz ataca os inimigos que estão na sala)
-        for (Enemy enemy : room.getEnemies()) {
+        while (iterator.hasNext()) {
+            Enemy enemy = iterator.next();
             enemy.takeDamage(agent.getPower());
 
             if (enemy.getHeatlh() <= 0) {
-                room.removeEnemy(enemy);
+                iterator.remove(); // Remove com segurança
                 System.out.println(enemy.getName() + " was defeated!");
-                mission.getBuilding().updateWeights();  // Atualiza os pesos das arestas
+                mission.getBuilding().updateWeights();
             }
         }
 
@@ -76,17 +85,28 @@ public class MissionSimulator {
             return;
         }
 
-        // Cenário 1: Fase dos inimigos (contra-ataque)
-        System.out.println("Remaining enemies counterattack!");
-        for (Enemy enemy : room.getEnemies()) {
+        Iterator<Enemy> enemyIterator = room.getEnemies().iterator();
+        while (enemyIterator.hasNext()) {
+            Enemy enemy = enemyIterator.next();
             agent.takeDamage(enemy.getPower());
             System.out.println("Agent took damage. Current health: " + agent.getHealth());
-            enemy.moveRandomly(buildingNetwork, mission.getBuilding());
 
             if (agent.getHealth() <= 0) {
                 System.out.println("Agent has been defeated! Game Over.");
                 return;
             }
+        }
+        if (!enemiesMovedThisTurn) {
+            for (Room r : mission.getBuilding().getRooms()) {
+                if (!r.equals(agent.getCurrentRoom())) {
+                    Iterator<Enemy> moveIterator = r.getEnemies().iterator();
+                    while (moveIterator.hasNext()) {
+                        Enemy enemy = moveIterator.next();
+                        enemy.moveRandomly(buildingNetwork, mission.getBuilding());
+                    }
+                }
+            }
+            enemiesMovedThisTurn = true;  // Marca que os inimigos se moveram nesta ronda
         }
     }
 
@@ -95,31 +115,36 @@ public class MissionSimulator {
         Network<Room> buildingNetwork = mission.getBuilding().getMap();
 
         // Movimentação dos inimigos (Cenário 2: Sala sem inimigos, inimigos se movem aleatoriamente)
-        for (Room room : mission.getBuilding().getRooms()) {
-            if (!room.equals(agent.getCurrentRoom())) {
-                for (Enemy enemy : room.getEnemies()) {
-                    enemy.moveRandomly(buildingNetwork, mission.getBuilding()); // Movimenta apenas inimigos fora da sala do agente
+        if (!enemiesMovedThisTurn) {
+            for (Room room : mission.getBuilding().getRooms()) {
+                if (!room.equals(agent.getCurrentRoom())) {
+                    Iterator<Enemy> enemyIterator = room.getEnemies().iterator();
+                    while (enemyIterator.hasNext()) {
+                        Enemy enemy = enemyIterator.next();
+                        enemy.moveRandomly(buildingNetwork, mission.getBuilding()); // Movimenta apenas inimigos fora da sala do agente
+                    }
                 }
             }
+
+            enemiesMovedThisTurn = true;
         }
 
         // Cenário 3: Inimigos entram na sala onde o agente está
         if (!agent.getCurrentRoom().getEnemies().isEmpty()) {
             System.out.println("Enemies entered the agent's room!");
 
-            // Fase dos inimigos: Ataque dos inimigos
             System.out.println("Enemies attack first!");
-            for (Enemy enemy : agent.getCurrentRoom().getEnemies()) {
+            Iterator<Enemy> enemyIterator = agent.getCurrentRoom().getEnemies().iterator();
+            while (enemyIterator.hasNext()) {
+                Enemy enemy = enemyIterator.next();
                 agent.takeDamage(enemy.getPower());
                 System.out.println("Agent took damage from " + enemy.getName() + ". Current health: " + agent.getHealth());
 
-                // Verificação se o agente morreu
                 if (agent.getHealth() <= 0) {
                     System.out.println("Agent has been defeated! Game Over.");
                     return;
                 }
             }
-
             processCombat(agent.getCurrentRoom());
         }
     }
@@ -150,5 +175,30 @@ public class MissionSimulator {
         mission.getTarget().rescue();
         System.out.println("Target rescued! Exit the building to complete the mission.");
     }
+
+    public void processExit() {
+        Room currentRoom = agent.getCurrentRoom();
+
+
+        if (!currentRoom.isEntryExit()) {
+            System.out.println("You need to be in a room classified as 'entry-exit' to leave the building.");
+            return;
+        }
+
+
+        if (!mission.getTarget().isRescued()) {
+            System.out.println("You haven't rescued the target yet. Complete the mission before leaving.");
+            return;
+        }
+
+        System.out.println("Congratulations! You have successfully completed the mission!");
+        System.exit(0);
+    }
+
+
+    public void endTurn() {
+        enemiesMovedThisTurn = false;
+    }
+
 }
 
