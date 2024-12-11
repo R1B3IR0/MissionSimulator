@@ -59,6 +59,22 @@ public class Building {
         return weight;
     }
 
+    /**
+     * Atualiza os pesos das arestas do grafo
+     */
+    public void updateWeights() {
+        for (Connection connection : connections) {
+            Room room1 = connection.getOrigin();
+            Room room2 = connection.getDestination();
+            double weight = calculateWeight(room1, room2);
+
+            if(map.hasEdge(room1, room2)){
+                // Atualiza o peso da aresta
+                map.setEdgeWeight(room1, room2, weight);
+            }
+        }
+    }
+
     public void visualizeGraph() {
         System.setProperty("org.graphstream.ui", "swing");
 
@@ -105,6 +121,7 @@ public class Building {
         // Exibe o gráfico
         graph.display();
     }
+
     public UnorderedListADT<Connection> getConnections() {
         return connections;
     }

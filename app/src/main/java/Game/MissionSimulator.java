@@ -22,7 +22,7 @@ public class MissionSimulator {
     //Atualiza pesos das arestas (calculateWeight());
 
     public void processAgentTurn() {
-        Room currentRoom = agent.getCurrentRoom();
+        Room currentRoom = agent.getCurrentRoom(); // O Tó Cruz está na sala atual
 
         if (!currentRoom.getEnemies().isEmpty()) {
             processCombat(currentRoom); // Scenario 1: Tó Cruz entra na sala e encontra inimigos
@@ -61,15 +61,18 @@ public class MissionSimulator {
         // Cenário 1: Fase do jogador (Tó Cruz ataca os inimigos que estão na sala)
         for (Enemy enemy : room.getEnemies()) {
             enemy.takeDamage(agent.getPower());
+
             if (enemy.getHeatlh() <= 0) {
                 room.removeEnemy(enemy);
                 System.out.println(enemy.getName() + " was defeated!");
+                mission.getBuilding().updateWeights();  // Atualiza os pesos das arestas
             }
         }
 
         // Verificação: Se todos os inimigos foram derrotados, encerra o combate
         if (room.getEnemies().isEmpty()) {
             System.out.println("All enemies in the room were defeated. Combat ends.");
+            mission.getBuilding().updateWeights();  // Atualiza os pesos das arestas
             return;
         }
 
@@ -78,7 +81,7 @@ public class MissionSimulator {
         for (Enemy enemy : room.getEnemies()) {
             agent.takeDamage(enemy.getPower());
             System.out.println("Agent took damage. Current health: " + agent.getHealth());
-            enemy.moveRandomly(buildingNetwork);
+            enemy.moveRandomly(buildingNetwork, mission.getBuilding());
 
             if (agent.getHealth() <= 0) {
                 System.out.println("Agent has been defeated! Game Over.");
@@ -90,11 +93,12 @@ public class MissionSimulator {
 
     public void processEnemiesTurn() {
         Network<Room> buildingNetwork = mission.getBuilding().getMap();
+
         // Movimentação dos inimigos (Cenário 2: Sala sem inimigos, inimigos se movem aleatoriamente)
         for (Room room : mission.getBuilding().getRooms()) {
-            for (Enemy enemy : room.getEnemies()) {
-                if (!room.equals(agent.getCurrentRoom())) {
-                    enemy.moveRandomly(buildingNetwork); // Movimenta apenas inimigos fora da sala do agente
+            if (!room.equals(agent.getCurrentRoom())) {
+                for (Enemy enemy : room.getEnemies()) {
+                    enemy.moveRandomly(buildingNetwork, mission.getBuilding()); // Movimenta apenas inimigos fora da sala do agente
                 }
             }
         }

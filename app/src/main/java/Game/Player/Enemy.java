@@ -1,5 +1,6 @@
 package Game.Player;
 
+import Game.Building;
 import Game.Room;
 import Structures.collections.graphs.Network;
 import Structures.collections.lists.ArrayOrderedList;
@@ -66,7 +67,7 @@ public class Enemy {
      *  Enemies move randomly up to two divisions from your position.
      * @param network
      */
-    public void moveRandomly(Network<Room> network) {
+    public void moveRandomly(Network<Room> network, Building building) {
         Room currentRoom = this.getRoom();
 
         // Obtém um iterador para os vértices (salas) na rede
@@ -85,28 +86,39 @@ public class Enemy {
             }
         }
 
-        // Limita a lista de salas vizinhas a no máximo 2
-        if (adjacentRooms.size() > 2) {
-            ArrayUnorderedList<Room> limitedAdjacentRooms = new ArrayUnorderedList<>();
-            for (int i = 0; i < 2; i++) {
-                limitedAdjacentRooms.addToRear(adjacentRooms.get(i));
+        // Armazena as salas a até duas divisões de distância
+        ArrayUnorderedList<Room> twoStepRooms = new ArrayUnorderedList<>();
+
+        // Adiciona as salas adjacentes das salas adjacentes
+        for (Room adjacentRoom : adjacentRooms) {
+            twoStepRooms.addToRear(adjacentRoom);  // Adiciona a sala adjacente
+
+            iterator = network.vertexIterator();
+
+            while (iterator.hasNext()) {
+                Room twoStepRoom = iterator.next();
+                if (network.getWeight(adjacentRoom, twoStepRoom) != Double.POSITIVE_INFINITY && !twoStepRooms.contains(twoStepRoom)) {
+                    twoStepRooms.addToRear(twoStepRoom);
+                }
             }
-            adjacentRooms = limitedAdjacentRooms;
         }
 
-        // Verifica se há salas vizinhas
-        if (adjacentRooms.isEmpty()) {
+        // Verifica se há salas a até duas divisões de distância
+        if (twoStepRooms.isEmpty()) {
             System.out.println(name + " não pode se mover. Nenhuma sala vizinha encontrada.");
             return; // Não move se não houver salas vizinhas
         }
 
-        // Escolhe aleatoriamente uma sala vizinha usando Random
+        // Escolhe aleatoriamente uma sala a até duas divisões de distância usando Random
         Random rand = new Random();
-        Room newRoom = adjacentRooms.get(rand.nextInt(adjacentRooms.size()));
+        Room newRoom = twoStepRooms.get(rand.nextInt(twoStepRooms.size()));
 
-        // Move o inimigo para a nova sala
+        // Define a nova sala do inimigo
         this.setRoom(newRoom);
         System.out.println(name + " se moveu para " + newRoom.getName());
+
+        building.updateWeights();
+        System.out.println("Pesos atualizados.");
     }
 
 

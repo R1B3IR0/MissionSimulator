@@ -71,6 +71,7 @@ public class Room {
     public void removeEnemy(Enemy enemy) {
         enemies.remove(enemy);
     }
+
     public void removeItem(Item item) {
         if (items.contains(item)) {
             items.remove(item);

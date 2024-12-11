@@ -420,7 +420,6 @@ public class Graph<T> implements GraphADT<T> {
      * @return An iterator over the vertices in the shortest path.
      */
 
-
     public int shortestPathLength(T startVertex, T targetVertex) {
         return shortestPathLength(getIndex(startVertex), getIndex(targetVertex));
     }
@@ -433,6 +432,7 @@ public class Graph<T> implements GraphADT<T> {
      * @param targetIndex O índice do vértice de destino.
      * @return O comprimento do caminho mais curto.
      */
+
     public int shortestPathLength(int startIndex, int targetIndex) {
         int result = 0;
         if (!indexIsValid(startIndex) || !indexIsValid(targetIndex)) {
@@ -544,9 +544,11 @@ public class Graph<T> implements GraphADT<T> {
         return result;
     }
 
+
     public boolean hasEdge(T vertex1, T vertex2) {
         int index1 = getIndex(vertex1);
         int index2 = getIndex(vertex2);
+
         if (index1 == -1 || index2 == -1) {
             return false;
         }

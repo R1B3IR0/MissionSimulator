@@ -33,7 +33,7 @@ public class JsonHandler {
                 JSONArray conection = (JSONArray) conectionObj;
                 Room from = findRoom(building, (String) conection.get(0));
                 Room to = findRoom(building, (String) conection.get(1));
-                // Adicionar ligação bidirecional
+                // Adiciona a ligação ao grafo
                 building.getMap().addEdge(from, to);
                 building.getConnections().addToRear(new Connection(from, to));
             }

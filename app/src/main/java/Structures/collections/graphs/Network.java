@@ -284,4 +284,21 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return minIndex;
     }
 
+    /**
+     * Sets the weight of the edge between two vertices.
+     *
+     * @param vertex1 the first vertex
+     * @param vertex2 the second vertex
+     * @param weight  the weight of the edge
+     */
+    public void setEdgeWeight(T vertex1, T vertex2, double weight) {
+        int index1 = getIndex(vertex1);
+        int index2 = getIndex(vertex2);
+
+        if (indexIsValid(index1) && indexIsValid(index2)) {
+            weightMatrix[index1][index2] = weight;
+            weightMatrix[index2][index1] = weight;
+        }
+    }
+
 }

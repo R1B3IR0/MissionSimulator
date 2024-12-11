@@ -8,6 +8,7 @@ public class Target {
     public Target(String tipo, Room room) {
         this.tipo = tipo;
         this.room = room;
+        this.rescued = false; // Inicialmente não resgatado
     }
 
     public boolean isRescued() {
