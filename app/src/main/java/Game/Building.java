@@ -14,12 +14,14 @@ public class Building {
     private UnorderedListADT<Room> rooms;
     private UnorderedListADT<Connection> connections;
     private Network<Room> map;
+    private ArrayUnorderedList<Room> entryExitRooms;
 
 
     public Building() {
-        this.rooms = new UnorderedLinkedList<>();
+        this.rooms = new ArrayUnorderedList<>();
         this.connections = new UnorderedLinkedList<>();
         this.map = new Network<>();
+        this.entryExitRooms = new ArrayUnorderedList<>();
     }
 
 
@@ -147,15 +149,21 @@ public class Building {
         this.map = map;
     }
 
-    public ArrayUnorderedList<Room> getRoomsWithEntryExit() {
-        ArrayUnorderedList<Room> roomsWithEntryExit = new ArrayUnorderedList<>();
+    public void storeEntryExitRooms() {
         for (Room room : rooms) {
             if (room.isEntryExit()) {
-                roomsWithEntryExit.addToRear(room);
+                entryExitRooms.addToRear(room);
             }
         }
-        return roomsWithEntryExit;
     }
+
+    public ArrayUnorderedList<Room> getStoredEntryExitRooms() {
+        return entryExitRooms;
+    }
+
+
+
+
 
     @Override
     public String toString() {
