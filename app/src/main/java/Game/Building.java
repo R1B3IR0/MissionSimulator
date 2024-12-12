@@ -157,7 +157,7 @@ public class Building {
         }
     }
 
-    public ArrayUnorderedList<Room> getStoredEntryExitRooms() {
+    public ArrayUnorderedList<Room> getRoomsWithEntryExit() {
         return entryExitRooms;
     }
 
