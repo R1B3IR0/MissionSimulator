@@ -15,7 +15,7 @@ import Game.Player.Enemy;
 
 public class JsonHandler {
 
-    public static Building importJson(String filePath) {
+    public static Mission importJson(String filePath) {
         JSONParser parser = new JSONParser();
         try (FileReader reader = new FileReader(filePath)) {
             JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -88,7 +88,7 @@ public class JsonHandler {
                 }
             }
 
-            return building;
+            return mission;
         } catch (IOException | ParseException e) {
             e.printStackTrace();
             return null;

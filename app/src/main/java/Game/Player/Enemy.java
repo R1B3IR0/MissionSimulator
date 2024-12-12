@@ -91,9 +91,9 @@ public class Enemy {
         for (Room adjacentRoom : adjacentRooms) {
             twoStepRooms.addToRear(adjacentRoom);  // Adiciona a sala adjacente
 
-            iterator = network.vertexIterator();
+            Iterator<Room> iterator2 = network.vertexIterator();
 
-            while (iterator.hasNext()) {
+            while (iterator2.hasNext()) {
                 Room twoStepRoom = iterator.next();
                 if (network.getWeight(adjacentRoom, twoStepRoom) != Double.POSITIVE_INFINITY && !twoStepRooms.contains(twoStepRoom)) {
                     twoStepRooms.addToRear(twoStepRoom);

@@ -32,6 +32,25 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
     }
 
     /**
+     * Find neighbors of a vertex.
+     */
+    public Iterator<T> findNeighbors(T vertex) {
+        ArrayUnorderedList<T> neighbors = new ArrayUnorderedList<>();
+        int index = getIndex(vertex);
+
+        if (indexIsValid(index)) {
+            for (int i = 0; i < numVertices; i++) {
+                if (adjMatrix[index][i]) {
+                    neighbors.addToRear(vertices[i]);
+                }
+            }
+        }
+
+        return neighbors.iterator();
+    }
+
+
+    /**
      * Initializes the weight matrix with default values.
      * The weight for an edge from a vertex to itself is set to 0, and to Double.POSITIVE_INFINITY for all other edges.
      */

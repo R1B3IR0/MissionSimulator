@@ -80,7 +80,7 @@ public class MissionSimulator {
     public void processAgentTurn() {
         Room currentRoom = agent.getCurrentRoom();
 
-        System.out.println("Choose an action: (1) Move, (2) Stay, (3) Use Health Kit");
+        //System.out.println("Choose an action: (1) Move, (2) Stay, (3) Use Health Kit");
         int action = getPlayerAction(); // Implement a method to capture player action input.
 
         switch (action) {
@@ -126,6 +126,7 @@ public class MissionSimulator {
         while (iterator.hasNext()) {
             Enemy enemy = iterator.next();
             enemy.takeDamage(agent.getPower()); // Aplica dano a todos os inimigos na sala
+            System.out.println("Agent attacked " + enemy.getName() + ". Current health: " + enemy.getHeatlh());
 
             if (enemy.getHeatlh() <= 0) {
                 System.out.println(enemy.getName() + " was defeated!");
@@ -158,14 +159,16 @@ public class MissionSimulator {
     }
 
     public void moveRandomlyEnemies() {
+        Room agentRoom = agent.getCurrentRoom();
         for (Room room : mission.getBuilding().getRooms()) {
-            if (!room.equals(agent.getCurrentRoom())) {
-                Iterator<Enemy> enemyIterator = room.getEnemies().iterator();
-                while (enemyIterator.hasNext()) {
-                    Enemy enemy = enemyIterator.next();
-                    enemy.moveRandomly(mission.getBuilding().getMap(), mission.getBuilding());
-                    System.out.println("Enemies moved to a new room.");
-                }
+            if (room.equals(agentRoom)) {
+                continue; // Ignora a sala onde o agente está
+            }
+            Iterator<Enemy> enemyIterator = room.getEnemies().iterator();
+            while (enemyIterator.hasNext()) {
+                Enemy enemy = enemyIterator.next();
+                enemy.moveRandomly(mission.getBuilding().getMap(), mission.getBuilding());
+                System.out.println("Enemies moved to new room");
             }
         }
     }
@@ -278,12 +281,10 @@ public class MissionSimulator {
         ArrayUnorderedList<Room> adjacentRooms = new ArrayUnorderedList<>();
 
         // Obtém as salas adjacentes
-        Iterator<Room> iterator = buildingNetwork.vertexIterator();
+        Iterator<Room> iterator = buildingNetwork.findNeighbors(currentRoom);
         while (iterator.hasNext()) {
             Room adjacentRoom = iterator.next();
-            if (buildingNetwork.getWeight(currentRoom, adjacentRoom) != Double.POSITIVE_INFINITY) {
-                adjacentRooms.addToRear(adjacentRoom);
-            }
+            adjacentRooms.addToRear(adjacentRoom);
         }
 
         // Exibe as salas adjacentes para o jogador escolher
@@ -351,6 +352,46 @@ public class MissionSimulator {
 
     public void endTurn() {
         enemiesMovedThisTurn = false;
+    }
+
+    public Mission getMission() {
+        return mission;
+    }
+
+    public void setMission(Mission mission) {
+        this.mission = mission;
+    }
+
+    public Agent getAgent() {
+        return agent;
+    }
+
+    public void setAgent(Agent agent) {
+        this.agent = agent;
+    }
+
+    public Target getTarget() {
+        return target;
+    }
+
+    public void setTarget(Target target) {
+        this.target = target;
+    }
+
+    public boolean isEnemiesMovedThisTurn() {
+        return enemiesMovedThisTurn;
+    }
+
+    public void setEnemiesMovedThisTurn(boolean enemiesMovedThisTurn) {
+        this.enemiesMovedThisTurn = enemiesMovedThisTurn;
+    }
+
+    public boolean isPlayerTurn() {
+        return isPlayerTurn;
+    }
+
+    public void setPlayerTurn(boolean playerTurn) {
+        isPlayerTurn = playerTurn;
     }
 
 }

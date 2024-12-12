@@ -15,7 +15,7 @@ public class Room {
 
     public Room(String name) {
         this.name = name;
-        this.classification = "normal";
+        this.classification = "normal"; // default classification
         this.enemies = new ArrayUnorderedList<>();
         this.items = new ArrayUnorderedList<>();
     }
@@ -81,6 +81,10 @@ public class Room {
         }
     }
 
+    /**
+     * Verifica se a sala é uma sala de entrada/saída
+     * @return
+     */
     public boolean isEntryExit() {
         return "entrada-saida".equalsIgnoreCase(classification);
     }
