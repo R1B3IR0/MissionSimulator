@@ -247,6 +247,7 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         }
         return distances[targetIndex];
     }
+
     //Iterator novo
     public Iterator<T> vertexIterator() {
         return new Iterator<T>() {

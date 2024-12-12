@@ -303,23 +303,49 @@ public class MissionSimulator {
         return adjacentRooms.get(chosenRoomIndex);
     }
 
-    public void processExit() {
+    public void checkAndMoveToExit() {
         Room currentRoom = agent.getCurrentRoom();
 
 
-        if (!currentRoom.isEntryExit()) {
-            System.out.println("You need to be in a room classified as 'entrada-saida' to leave the building.");
-            return;
+        if (currentRoom.isEntryExit()) {
+            System.out.println("Você está em uma sala de entrada-saída. Parabéns, você saiu do Edificio!");
+            System.exit(0); // Encerra o jogo
+        } else {
+            System.out.println("Você não está em uma sala de entrada-saída. A procurar a sala mais próxima...");
+
+            // Encontra a sala de entrada-saída mais próxima
+            Room nearestExit = findNearestExit(currentRoom);
+
+            if (nearestExit != null) {
+                System.out.println("A caminho para a sala de entrada-saída mais próxima: " + nearestExit.getName());
+                moveAgentToRoom(nearestExit);
+            } else {
+                System.out.println("Nenhuma sala de entrada-saída encontrada.");
+            }
+        }
+    }
+
+    /**
+     * Encontra a saída mais próxima para o agente sair do edifício.
+     * @param currentRoom
+     * @return
+     */
+    public Room findNearestExit(Room currentRoom ) {
+        Network<Room> buildingNetwork = mission.getBuilding().getMap();
+        ArrayUnorderedList<Room> entryExitRooms = mission.getBuilding().getRoomsWithEntryExit();
+
+        Room nearestExit = null;
+        int shortestPathLength = Integer.MAX_VALUE;
+
+        for (Room exitRoom : entryExitRooms) {
+            int pathLength = (int) buildingNetwork.shortestPathWeight(currentRoom, exitRoom);
+            if (pathLength < shortestPathLength) {
+                shortestPathLength = pathLength;
+                nearestExit = exitRoom;
+            }
         }
 
-
-        if (!mission.getTarget().isRescued()) {
-            System.out.println("You haven't rescued the target yet. Complete the mission before leaving.");
-            return;
-        }
-
-        System.out.println("Congratulations! You have successfully completed the mission!");
-        System.exit(0);
+        return nearestExit;
     }
 
 
