@@ -27,7 +27,7 @@ public class HealthKit extends Item {
         int health = agent.getHealth();   // 90
 
         if (health >= 100) {
-            System.out.println("Vida cheia.");
+            System.out.println("Health is full. Cannot use HealthKit.");
         } else {
             // Pontos a recuperar
             int pointsToAdd = pointsRecovered;  // 25
@@ -41,7 +41,7 @@ public class HealthKit extends Item {
             agent.setHealth(health);
 
             System.out.println("Kit de vida com " + pointsRecovered + " pontos dos quais " + pointsToAdd +
-                    " foram adicionados.");
+                    " foram recuperados.");
 
         }
     }

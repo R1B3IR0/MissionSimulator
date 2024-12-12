@@ -80,6 +80,7 @@ public class Room {
             System.out.println("Item not found in the room.");
         }
     }
+
     public boolean isEntryExit() {
         return "entrada-saida".equalsIgnoreCase(classification);
     }
