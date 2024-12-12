@@ -79,7 +79,8 @@ public class Enemy {
             Room adjacentRoom = iterator.next();
 
             // Verifica se existe uma aresta entre as duas salas
-            if (network.getWeight(currentRoom, adjacentRoom) != Double.POSITIVE_INFINITY) {
+
+            if ( adjacentRoom != null && network.getWeight(currentRoom, adjacentRoom) != Double.POSITIVE_INFINITY) {
                 adjacentRooms.addToRear(adjacentRoom);  // Adiciona a sala vizinha
             }
         }
@@ -95,7 +96,7 @@ public class Enemy {
 
             while (iterator2.hasNext()) {
                 Room twoStepRoom = iterator.next();
-                if (network.getWeight(adjacentRoom, twoStepRoom) != Double.POSITIVE_INFINITY && !twoStepRooms.contains(twoStepRoom)) {
+                if (twoStepRoom != null && network.getWeight(adjacentRoom, twoStepRoom) != Double.POSITIVE_INFINITY && !twoStepRooms.contains(twoStepRoom)) {
                     twoStepRooms.addToRear(twoStepRoom);
                 }
             }

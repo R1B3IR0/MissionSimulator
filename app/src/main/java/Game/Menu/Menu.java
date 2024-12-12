@@ -22,7 +22,7 @@ public class Menu {
                     simulator.startGameLoop();
                     break;
                 case 2:
-                    // Simulação Automática
+                    simulator.automaticSimulation();
                     break;
                 case 3:
                     simulator.getMission().getBuilding().visualizeGraph();

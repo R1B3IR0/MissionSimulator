@@ -279,7 +279,7 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
 
             @Override
             public T next() {
-                return vertices[index++];  // Retorna o próximo vértice
+                return hasNext() ? vertices[index++] : null;// Retorna o próximo vértice
             }
         };
     }
