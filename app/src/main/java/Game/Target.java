@@ -11,6 +11,10 @@ public class Target {
         this.rescued = false; // Inicialmente não resgatado
     }
 
+    /**
+     * Verifica se o alvo foi resgatado
+     * @return true se foi resgatado, false caso contrário
+     */
     public boolean isRescued() {
         return rescued;
     }

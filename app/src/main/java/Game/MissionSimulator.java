@@ -14,139 +14,261 @@ public class MissionSimulator {
     private Agent agent;
     private Target target;
     private boolean enemiesMovedThisTurn;
+    private boolean isPlayerTurn; // Flag para controlar o turno do jogador
 
     public MissionSimulator(Mission mission, Agent agent) {
         this.mission = mission;
         this.agent = agent;
         this.target = mission.getTarget();
         this.enemiesMovedThisTurn = false;
+        this.isPlayerTurn = true;
 
     }
 
-    public void processAgentTurn() {
+    /**
+     * Lógica dos turnos do jogo
+     */
+    public void startGameLoop() {
+        boolean gameOver = false;
 
-        Room currentRoom = agent.getCurrentRoom(); // O Tó Cruz está na sala atual
-
-        if (!currentRoom.getEnemies().isEmpty()) {
-            processCombat(currentRoom); // Scenario 1: Tó Cruz entra na sala e encontra inimigos
-        } else if (mission.getTarget().getRoom().equals(currentRoom) && currentRoom.getEnemies().isEmpty()) {
-            processTargetInteraction(); // Scenario 6: Tó Cruz encontra o alvo sem inimigos
-        } else {
-            System.out.println("No enemies in the room. Choose your next action.");
-        }
-        // Verificar os itens na sala
-        Iterator<Item> iterator = currentRoom.getItems().iterator();
-        while (iterator.hasNext()) {
-            Item item = iterator.next();
-            if (item instanceof BulletProofVest) {
-                BulletProofVest vest = (BulletProofVest) item;
-                vest.applyKit(agent); // Aplica o colete no agente
-                iterator.remove(); // Remove com segurança o colete da sala
-                System.out.println("BulletProofVest used and applied to agent.");
-                break; // O colete foi usado, não precisa continuar iterando
-            } else if (item instanceof HealthKit) {
-                if (agent.getInventory().size() < 2) {
-                    agent.getInventory().push((HealthKit) item); // Adiciona o HealthKit ao inventário
-                    iterator.remove(); // Remove o HealthKit com segurança
-                    System.out.println("HealthKit stored in inventory.");
-                } else {
-                    System.out.println("Backpack is full!");
-                }
+        while (!gameOver) {
+            if (isPlayerTurn) {  // Se for o turno do jogador é True
+                processAgentTurn();
+            } else { // False é o turno dos inimigos
+                processEnemiesTurn();
             }
-        }
-
-    }
-
-
-    public void processCombat(Room room) {
-        Network<Room> buildingNetwork = mission.getBuilding().getMap();
-        System.out.println("Combat initiated in division: " + room.getName());
-        Iterator<Enemy> iterator = room.getEnemies().iterator();
-
-
-        // Cenário 1: Fase do jogador (Tó Cruz ataca os inimigos que estão na sala)
-        while (iterator.hasNext()) {
-            Enemy enemy = iterator.next();
-            enemy.takeDamage(agent.getPower());
-
-            if (enemy.getHeatlh() <= 0) {
-                iterator.remove(); // Remove com segurança
-                System.out.println(enemy.getName() + " was defeated!");
-                mission.getBuilding().updateWeights();
-            }
-        }
-
-        // Verificação: Se todos os inimigos foram derrotados, encerra o combate
-        if (room.getEnemies().isEmpty()) {
-            System.out.println("All enemies in the room were defeated. Combat ends.");
-            mission.getBuilding().updateWeights();  // Atualiza os pesos das arestas
-            return;
-        }
-
-       /* Iterator<Enemy> enemyIterator = room.getEnemies().iterator();
-        while (enemyIterator.hasNext()) {
-            Enemy enemy = enemyIterator.next();
-            agent.takeDamage(enemy.getPower());
-            System.out.println("Agent took damage. Current health: " + agent.getHealth());
+            endTurn();
 
             if (agent.getHealth() <= 0) {
                 System.out.println("Agent has been defeated! Game Over.");
-                return;
+                gameOver = true;
+            } else if (mission.getTarget().isRescued() && agent.getCurrentRoom().isEntryExit()) {
+                System.out.println("Congratulations! You have successfully completed the mission!");
+                gameOver = true;
             }
-        }*/
-
-        //Move os inimigos
-        if (!enemiesMovedThisTurn) {
-            for (Room r : mission.getBuilding().getRooms()) {
-                if (!r.equals(agent.getCurrentRoom())) {
-                    Iterator<Enemy> moveIterator = r.getEnemies().iterator();
-                    while (moveIterator.hasNext()) {
-                        Enemy enemy = moveIterator.next();
-                        enemy.moveRandomly(buildingNetwork, mission.getBuilding());
-                    }
-                }
-            }
-            enemiesMovedThisTurn = true;
+            // Encerra o programa na consola
+            //System.exit(0);
         }
     }
 
+    /**
+     * O agente move-se para uma nova sala.
+     *
+     * @param newRoom
+     */
+    public void moveAgentToRoom(Room newRoom) {
+        if (mission.getBuilding().getRooms().contains(newRoom)) {
+            agent.setCurrentRoom(newRoom);
+            System.out.println("Agent moved to room: " + newRoom.getName());
 
-    public void processEnemiesTurn() {
+            // Verifica se a sala tem itens
+            verifyRoomItems(newRoom);
+        } else {
+            System.out.println("Invalid room. The agent cannot move to this room.");
+        }
+    }
+
+    /**
+     * O agente decide ficar na sala atual.
+     */
+    public void stayInCurrentRoom() {
+        System.out.println("Agent decided to stay in the current room: " + agent.getCurrentRoom().getName());
+    }
+
+    /*
+    public void processAgentTurn2() {
+        Room currentRoom = agent.getCurrentRoom(); // O Tó Cruz está na sala atual
+
+        if (!currentRoom.getEnemies().isEmpty()) {  // Sala com inimigos
+            processCombat2(currentRoom); // Scenario 1: Tó Cruz entra na sala e encontra inimigos
+        } else if (currentRoom.getEnemies().isEmpty()) { // Sala sem inimigos
+            System.out.println("No enemies in the room. Switching to enemies turn.");
+
+            // (Cenário 2: Sala sem inimigos, inimigos se movem aleatoriamente)
+            for (Room room : mission.getBuilding().getRooms()) {
+                if (!room.equals(agent.getCurrentRoom())) { // Verifica se a sala não é a sala do agente
+                    Iterator<Enemy> enemyIterator = room.getEnemies().iterator();
+                    while (enemyIterator.hasNext()) {
+                        Enemy enemy = enemyIterator.next();
+                        enemy.moveRandomly(mission.getBuilding().getMap(), mission.getBuilding());
+                        System.out.println("Enemies moved to a new room.");
+                    }
+                }
+            }
+            isPlayerTurn = false; // Muda para o turno dos inimigos
+        }
+
+        //isPlayerTurn = false; // Muda para o turno dos inimigos
+    }
+
+
+    public void processEnemiesTurn2() {
+        Room currentRoom = agent.getCurrentRoom(); // O Tó Cruz está na sala atual
         Network<Room> buildingNetwork = mission.getBuilding().getMap();
 
-        // Movimentação dos inimigos (Cenário 2: Sala sem inimigos, inimigos se movem aleatoriamente)
-        if (!enemiesMovedThisTurn) {
+        // Verifica se há inimigos na sala onde está o agente
+        if(currentRoom.getEnemies().isEmpty()) {
+            System.out.println("No enemies in the room. Switching to player turn.");
+            isPlayerTurn = true; // Muda para o turno do jogador
+        } else {
+            System.out.println("Enemies are in the agent's room!");
+
+            // Existe movimentação dos inimigos das outras salas excepto a do agente
             for (Room room : mission.getBuilding().getRooms()) {
-                if (!room.equals(agent.getCurrentRoom())) {
+                if (!room.equals(currentRoom)) { // Verifica se a sala é diferente da sala atual do agente
                     Iterator<Enemy> enemyIterator = room.getEnemies().iterator();
                     while (enemyIterator.hasNext()) {
                         Enemy enemy = enemyIterator.next();
                         enemy.moveRandomly(buildingNetwork, mission.getBuilding()); // Movimenta apenas inimigos fora da sala do agente
                     }
+                    System.out.println("Enemies moved to a new room.");
                 }
             }
 
-            enemiesMovedThisTurn = true;
-        }
-
-        // Cenário 3: Inimigos entram na sala onde o agente está
-        if (!agent.getCurrentRoom().getEnemies().isEmpty()) {
-            System.out.println("Enemies entered the agent's room!");
-
-            System.out.println("Enemies attack first!");
+            // Cenário 3: Inimigos entram na sala onde o agente está
+            System.out.println("Enemies attack!");
             Iterator<Enemy> enemyIterator = agent.getCurrentRoom().getEnemies().iterator();
+
             while (enemyIterator.hasNext()) {
                 Enemy enemy = enemyIterator.next();
-                agent.takeDamage(enemy.getPower());
+                agent.takeDamage(enemy.getPower()); // O inimigo ataca o agente
                 System.out.println("Agent took damage from " + enemy.getName() + ". Current health: " + agent.getHealth());
 
                 if (agent.getHealth() <= 0) {
                     System.out.println("Agent has been defeated! Game Over.");
-                    return;
+                    return; //Jogo Termina   Nota:Verificar a lógica mais tarde
                 }
             }
-            processCombat(agent.getCurrentRoom());
+
+            // Fim do turno: O turno termina e o próximo começa com Tó Cruz ainda na mesma sala com o inimigo
+            isPlayerTurn = true; // Muda para o turno do jogador
         }
+
+
+    }
+
+    public void processCombat2(Room room) {
+        Network<Room> buildingNetwork = mission.getBuilding().getMap();
+        System.out.println("Combat initiated in division: " + room.getName());
+        Iterator<Enemy> iterator = room.getEnemies().iterator(); // Obtém um iterador para os inimigos na sala
+
+        // Cenário 1: Fase do jogador (Tó Cruz ataca os inimigos que estão na sala)
+        while (iterator.hasNext()) {
+            Enemy enemy = iterator.next();
+            enemy.takeDamage(agent.getPower()); // Aplica dano a todos os inimigos na sala
+        }
+
+        isPlayerTurn = false; // Muda para o turno dos inimigos
+    }
+*/
+
+
+    public void processAgentTurn() {
+        Room currentRoom = agent.getCurrentRoom();
+
+        System.out.println("Choose an action: (1) Move, (2) Stay, (3) Use Health Kit");
+        int action = getPlayerAction(); // Implement a method to capture player action input.
+
+        switch (action) {
+            case 1: // Move
+                if (!currentRoom.getEnemies().isEmpty()) {
+                    System.out.println("You cannot move while enemies are present in the room.");
+                } else {
+                    Room newRoom = chooseRoomToMove(); // Implement method to let player choose a room.
+                    moveAgentToRoom(newRoom);
+                }
+                break;
+            case 2: // Stay
+                stayInCurrentRoom();
+                break;
+            case 3: // Use Health Kit
+                useHealthKit();
+                System.out.println("You used your turn to recover health.");
+                return; // Skip enemy turn as the player used their phase.
+            default:
+                System.out.println("Invalid action. Turn skipped.");
+        }
+
+        if (!currentRoom.getEnemies().isEmpty()) {
+            processCombat(currentRoom);
+        } else if (currentRoom.equals(target.getRoom())) {
+            if (currentRoom.getEnemies().isEmpty()) {
+                processTargetInteraction();
+            } else {
+                System.out.println("Target is in the room, but enemies must be dealt with first.");
+            }
+        } else {
+            System.out.println("No enemies in the room. Enemies will now move.");
+            moveRandomlyEnemies();
+            isPlayerTurn = false;
+        }
+    }
+
+    public void processCombat(Room room) {
+        System.out.println("Combat initiated in division: " + room.getName());
+        Iterator<Enemy> iterator = room.getEnemies().iterator(); // Obtém um iterador para os inimigos na sala
+
+        // Cenário 1: Fase do jogador (Tó Cruz ataca os inimigos que estão na sala)
+        while (iterator.hasNext()) {
+            Enemy enemy = iterator.next();
+            enemy.takeDamage(agent.getPower()); // Aplica dano a todos os inimigos na sala
+
+            if (enemy.getHeatlh() <= 0) {
+                System.out.println(enemy.getName() + " was defeated!");
+                iterator.remove(); // Remove com segurança
+                //mission.getBuilding().updateWeights();
+            }
+        }
+
+        // Verificação: Se todos os inimigos foram derrotados, encerra o combate
+        if (room.getEnemies().isEmpty()) {
+            System.out.println("All enemies in the room have been defeated. Combat ends.");
+            mission.getBuilding().updateWeights();  // Atualiza os pesos das arestas
+            System.out.println("Edge weights updated.");
+        }else {
+            System.out.println("Enemies remains in the room. Prepare for their retaliation!");
+            isPlayerTurn = false; // Muda para o turno dos inimigos
+        }
+    }
+
+    public void handleEnemyAttack() {
+        System.out.println("Enemies are attacking!");
+        for (Enemy enemy : agent.getCurrentRoom().getEnemies()) {
+            agent.takeDamage(enemy.getPower());
+            System.out.println("Agent took damage from " + enemy.getName() + ". Current health: " + agent.getHealth());
+
+            if (agent.getHealth() <= 0) {
+                System.out.println("Agent has been defeated! Game Over.");
+                break;
+            }
+        }
+    }
+
+    public void moveRandomlyEnemies() {
+        for (Room room : mission.getBuilding().getRooms()) {
+            if (!room.equals(agent.getCurrentRoom())) {
+                Iterator<Enemy> enemyIterator = room.getEnemies().iterator();
+                while (enemyIterator.hasNext()) {
+                    Enemy enemy = enemyIterator.next();
+                    enemy.moveRandomly(mission.getBuilding().getMap(), mission.getBuilding());
+                    System.out.println("Enemies moved to a new room.");
+                }
+            }
+        }
+    }
+
+    public void processEnemiesTurn() {
+        Room currentRoom = agent.getCurrentRoom();
+
+        if (currentRoom.getEnemies().isEmpty()) {
+            System.out.println("No enemies in the room. Switching to player turn.");
+            isPlayerTurn = true;
+        } else {
+            handleEnemyAttack();
+            isPlayerTurn = true;
+        }
+
+        moveRandomlyEnemies();
     }
 
 
@@ -168,14 +290,58 @@ public class MissionSimulator {
         // Cenário 5: Alvo com inimigos na sala
         if (!agent.getCurrentRoom().getEnemies().isEmpty()) {
             System.out.println("Enemies must be defeated before interacting with the target!");
-            return;
+        } else {
+            // Cenário 6: Alvo sem inimigos na sala
+            System.out.println("Interacting with target.");
+            mission.getTarget().rescue();
+            System.out.println("Target has been rescued! Exit the building to complete the mission.");
         }
-        // Cenário 6: Tó Cruz encontra o alvo sem inimigos
-        System.out.println("Agent found the target!");
-        mission.getTarget().rescue();
-        System.out.println("Target rescued! Exit the building to complete the mission.");
     }
 
+    public void useHealthKit() {
+        if (!agent.getInventory().isEmpty()) {
+            HealthKit kit = agent.getInventory().pop();
+            kit.applyKit(agent);
+            System.out.println("HealthKit used. Current health: " + agent.getHealth());
+        } else {
+            System.out.println("No HealthKits available.");
+        }
+    }
+
+    public void verifyRoomItems(Room newRoom) {
+        Room currentRoom = agent.getCurrentRoom();
+
+        // Verificar os itens na sala
+        Iterator<Item> iterator = currentRoom.getItems().iterator();
+        while (iterator.hasNext()) {
+            Item item = iterator.next();
+            if (item instanceof BulletProofVest) {
+                BulletProofVest vest = (BulletProofVest) item;
+                vest.applyKit(agent); // Aplica o colete no agente
+                iterator.remove(); // Remove com segurança o colete da sala
+                System.out.println("BulletProofVest used and applied to agent.");
+                break; // O colete foi usado, não precisa continuar iterando
+            } else if (item instanceof HealthKit) {
+                if (agent.getInventory().size() < 2) {
+                    agent.getInventory().push((HealthKit) item); // Adiciona o HealthKit ao inventário
+                    iterator.remove(); // Remove o HealthKit com segurança
+                    System.out.println("HealthKit stored in inventory.");
+                } else {
+                    System.out.println("Backpack is full!");
+                }
+            }
+        }
+    }
+
+    private int getPlayerAction() {
+        // Placeholder method: Implement a way to get user input for choosing an action.
+        return 1; // Default to move for now.
+    }
+
+    public Room chooseRoomToMove() {
+        // Placeholder method: Implement a way to let the player choose a room to move.
+        return agent.getCurrentRoom(); // Default to staying in the current room.
+    }
     public void processExit() {
         Room currentRoom = agent.getCurrentRoom();
 
