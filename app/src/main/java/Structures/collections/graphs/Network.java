@@ -1,5 +1,6 @@
 package Structures.collections.graphs;
 
+import Game.PathWithWeight;
 import Structures.collections.graphs.Graph;
 import Structures.collections.graphs.NetworkADT;
 import Structures.collections.lists.ArrayUnorderedList;
@@ -226,6 +227,65 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         }
 
         return path.iterator();
+    }
+
+    public Iterator<PathWithWeight<T>> findShortestPathWithWeights(T startVertex, T endVertex) {
+        int numVertices = this.size();
+        double[] distances = new double[numVertices];
+        boolean[] visited = new boolean[numVertices];
+        int[] previous = new int[numVertices];
+
+        for (int i = 0; i < numVertices; i++) {
+            distances[i] = Double.MAX_VALUE;
+            previous[i] = -1;
+        }
+
+        // Set the distance for the start vertex
+        distances[getIndex(startVertex)] = 0;
+
+        for (int i = 0; i < numVertices; i++) {
+            int closestVertex = -1;
+            double shortestDistance = Double.MAX_VALUE;
+
+            // Find the closest unvisited vertex
+            for (int j = 0; j < numVertices; j++) {
+                if (!visited[j] && distances[j] < shortestDistance) {
+                    closestVertex = j;
+                    shortestDistance = distances[j];
+                }
+            }
+
+            // If no vertex is found, exit the loop
+            if (closestVertex == -1) {
+                break;
+            }
+
+            visited[closestVertex] = true;
+
+            // Update distances for neighboring vertices
+            for (int j = 0; j < numVertices; j++) {
+                if (!visited[j] && adjMatrix[closestVertex][j]) {  // Checking if an edge exists
+                    double edgeDistance = weightMatrix[closestVertex][j];
+                    if (distances[closestVertex] + edgeDistance < distances[j]) {
+                        distances[j] = distances[closestVertex] + edgeDistance;
+                        previous[j] = closestVertex;
+                    }
+                }
+            }
+        }
+
+        // Construct the shortest path by backtracking through the `previous` array
+        ArrayUnorderedList<PathWithWeight<T>> pathWithWeights = new ArrayUnorderedList<>();
+        int endIndex = getIndex(endVertex);
+        int startIndex = getIndex(startVertex);
+
+        if (previous[endIndex] != -1 || startVertex.equals(endVertex)) {
+            for (int vertex = endIndex; vertex != -1; vertex = previous[vertex]) {
+                pathWithWeights.addToRear( new PathWithWeight<>(getVertex(vertex), distances[vertex]));
+            }
+        }
+
+        return pathWithWeights.iterator();
     }
 
     /**

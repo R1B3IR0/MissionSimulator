@@ -19,10 +19,10 @@ public class Menu {
                     isRunning = false;
                     break;
                 case 1:
-                    simulator.startGameLoop();
+                    simulator.startGameLoop(false);
                     break;
                 case 2:
-                    simulator.automaticSimulation();
+                    simulator.startGameLoop(true);
                     break;
                 case 3:
                     simulator.getMission().getBuilding().visualizeGraph();

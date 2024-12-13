@@ -23,10 +23,12 @@ public class DemoGame {
             building.storeEntryExitRooms(); // Guarda as salas de entrada e saída
 
             Agent agent = new Agent();
-            MissionSimulator simulator = new MissionSimulator(mission, agent);
 
             // Escolhe uma sala de entrada para o Agente.
-            simulator.getAgent().chooseEntryExitRoom(simulator.getMission().getBuilding().getRoomsWithEntryExit());
+            agent.chooseEntryExitRoom(mission.getBuilding().getRoomsWithEntryExit());
+
+            MissionSimulator simulator = new MissionSimulator(mission, agent);
+
 
             Menu.mainMenu(simulator);
         } catch (Exception e) {

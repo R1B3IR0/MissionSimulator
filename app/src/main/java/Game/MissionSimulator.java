@@ -15,12 +15,14 @@ public class MissionSimulator {
     private Mission mission;
     private Agent agent;
     private Target target;
+    private Room initialRoom;
     private boolean enemiesMovedThisTurn;
     private boolean isPlayerTurn; // Flag para controlar o turno do jogador
 
     public MissionSimulator(Mission mission, Agent agent) {
         this.mission = mission;
         this.agent = agent;
+        this.initialRoom = agent.getCurrentRoom();
         this.target = mission.getTarget();
         this.enemiesMovedThisTurn = false;
         this.isPlayerTurn = true;
@@ -30,12 +32,12 @@ public class MissionSimulator {
     /**
      * Lógica dos turnos do jogo
      */
-    public void startGameLoop() {
+    public void startGameLoop(boolean automatic) {
         boolean gameOver = false;
 
         while (!gameOver) {
             if (isPlayerTurn) {  // Se for o turno do jogador é True
-                processAgentTurn();
+                processAgentTurn(automatic);
             } else { // False é o turno dos inimigos
                 processEnemiesTurn();
             }
@@ -77,30 +79,80 @@ public class MissionSimulator {
         System.out.println("Agent decided to stay in the current room: " + agent.getCurrentRoom().getName());
     }
 
-    public void processAgentTurn() {
+    public void processAgentTurn(boolean automatic) {
         Room currentRoom = agent.getCurrentRoom();
 
-        //System.out.println("Choose an action: (1) Move, (2) Stay, (3) Use Health Kit");
-        int action = getPlayerAction(); // Implement a method to capture player action input.
+        if (automatic) {
+            if (!currentRoom.getEnemies().isEmpty()) {
+                System.out.println("You cannot move while enemies are present in the room.");
+            } else {
+                // Encontrar o caminho mais curto até o alvo
+                Room targetRoom = mission.getTarget().getRoom();
+                if (mission.getTarget().isRescued()) {
+                    {
+                        targetRoom = this.initialRoom;
+                        ArrayUnorderedList<Room> targetRoomsExit = this.mission.getBuilding().getRoomsWithEntryExit();
 
-        switch (action) {
-            case 1: // Move
-                if (!currentRoom.getEnemies().isEmpty()) {
-                    System.out.println("You cannot move while enemies are present in the room.");
-                } else {
-                    Room newRoom = chooseRoomToMove(); // Implement method to let player choose a room.
-                    moveAgentToRoom(newRoom);
+                        //Caminho que foi escolhido
+                        ArrayUnorderedList<PathWithWeight<Room>> bestPathToTarget = null;
+                        double bestPathToTargetWeight = Double.MAX_VALUE;
+                        int caminhoAlternativas = 1;
+                        int caminhoEscolhido = 0;
+                        for (Room room : targetRoomsExit) {
+                            ArrayUnorderedList<PathWithWeight<Room>> pathToTarget = findBestPathToTarget(currentRoom, room);
+                            double totalWeight = 0;
+                            for (PathWithWeight pathWithWeight : pathToTarget) {
+                                totalWeight += pathWithWeight.getWeight();
+                            }
+                            System.out.println("CAMINHO " + caminhoAlternativas + " | Total peso: " + totalWeight);
+                            //Quando sabemos o total de peso do caminho, comparamos com a melhor opçao
+                            if (totalWeight < bestPathToTargetWeight) {
+                                bestPathToTarget = pathToTarget;
+                                bestPathToTargetWeight = totalWeight;
+                                targetRoom = room;
+                                caminhoEscolhido = caminhoAlternativas;
+                            }
+
+                            caminhoAlternativas++;
+                        }
+                        System.out.println("ESCOLHI O CAMINHO " + caminhoEscolhido);
+                    }
                 }
-                break;
-            case 2: // Stay
-                stayInCurrentRoom();
-                break;
-            case 3: // Use Health Kit
-                useHealthKit();
-                System.out.println("You used your turn to recover health.");
-                return; // Skip enemy turn as the player used their phase.
-            default:
-                System.out.println("Invalid action. Turn skipped.");
+                ArrayUnorderedList<PathWithWeight<Room>> pathToTarget = findBestPathToTarget(currentRoom, targetRoom);
+                if (pathToTarget != null) {
+                    Iterator<PathWithWeight<Room>> iteratorPathToTarget = pathToTarget.iterator();
+                    if (iteratorPathToTarget.hasNext()) {
+                        moveAgentToRoom(iteratorPathToTarget.next().getRoom());
+                    }
+                }
+            }
+
+            //Dijktra
+            //TODO - Implementar
+
+        } else {
+            //System.out.println("Choose an action: (1) Move, (2) Stay, (3) Use Health Kit");
+            int action = getPlayerAction(); // Implement a method to capture player action input.
+
+            switch (action) {
+                case 1: // Move
+                    if (!currentRoom.getEnemies().isEmpty()) {
+                        System.out.println("You cannot move while enemies are present in the room.");
+                    } else {
+                        Room newRoom = chooseRoomToMove(); // Implement method to let player choose a room.
+                        moveAgentToRoom(newRoom);
+                    }
+                    break;
+                case 2: // Stay
+                    stayInCurrentRoom();
+                    break;
+                case 3: // Use Health Kit
+                    useHealthKit();
+                    System.out.println("You used your turn to recover health.");
+                    return; // Skip enemy turn as the player used their phase.
+                default:
+                    System.out.println("Invalid action. Turn skipped.");
+            }
         }
 
         if (!currentRoom.getEnemies().isEmpty()) {
@@ -126,7 +178,7 @@ public class MissionSimulator {
         while (iterator.hasNext()) {
             Enemy enemy = iterator.next();
             enemy.takeDamage(agent.getPower()); // Aplica dano a todos os inimigos na sala
-            System.out.println("Agent attacked " + enemy.getName() + ". Current health: " + enemy.getHeatlh());
+            System.out.println("Agent attacked " + enemy.getName() + ". Enemy current health: " + enemy.getHeatlh());
 
             if (enemy.getHeatlh() <= 0) {
                 System.out.println(enemy.getName() + " was defeated!");
@@ -139,7 +191,7 @@ public class MissionSimulator {
         if (room.getEnemies().isEmpty()) {
             System.out.println("All enemies in the room have been defeated. Combat ends.");
 
-        }else {
+        } else {
             System.out.println("Enemies remains in the room. Prepare for their retaliation!");
             isPlayerTurn = false; // Muda para o turno dos inimigos
         }
@@ -149,7 +201,7 @@ public class MissionSimulator {
         System.out.println("Enemies are attacking!");
         for (Enemy enemy : agent.getCurrentRoom().getEnemies()) {
             agent.takeDamage(enemy.getPower());
-            System.out.println("Agent took damage from " + enemy.getName() + ". Current health: " + agent.getHealth());
+            System.out.println("Agent took damage from " + enemy.getName() + ". Agent current health: " + agent.getHealth());
 
             if (agent.getHealth() <= 0) {
                 System.out.println("Agent has been defeated! Game Over.");
@@ -236,6 +288,7 @@ public class MissionSimulator {
 
     /**
      * Get user input for choosing an action.
+     *
      * @return
      */
     private int getPlayerAction() {
@@ -260,6 +313,7 @@ public class MissionSimulator {
 
     /**
      * Player chooses a room to move to.
+     *
      * @return
      */
     public Room chooseRoomToMove() {
@@ -315,10 +369,11 @@ public class MissionSimulator {
 
     /**
      * Encontra a saída mais próxima para o agente sair do edifício.
+     *
      * @param currentRoom
      * @return
      */
-    public Room findNearestExit(Room currentRoom ) {
+    public Room findNearestExit(Room currentRoom) {
         Network<Room> buildingNetwork = mission.getBuilding().getMap();
         ArrayUnorderedList<Room> entryExitRooms = mission.getBuilding().getRoomsWithEntryExit();
 
@@ -365,6 +420,15 @@ public class MissionSimulator {
         this.target = target;
     }
 
+    public Room getinitialRoom() {
+        return initialRoom;
+    }
+
+    public void setinitialRoom(Room initialRoom) {
+        this.initialRoom = initialRoom;
+    }
+
+
     public boolean isEnemiesMovedThisTurn() {
         return enemiesMovedThisTurn;
     }
@@ -381,71 +445,80 @@ public class MissionSimulator {
         isPlayerTurn = playerTurn;
     }
 
-    public ArrayUnorderedList<Room> findBestPathToTarget(Room startRoom, Room targetRoom) {
+    public ArrayUnorderedList<PathWithWeight<Room>> findBestPathToTarget(Room startRoom, Room targetRoom) {
         Network<Room> buildingNetwork = mission.getBuilding().getMap();
 
-        Iterator<Room> pathIterator = buildingNetwork.findShortestPath(startRoom, targetRoom);
+        Iterator<PathWithWeight<Room>> pathIterator = buildingNetwork.findShortestPathWithWeights(startRoom, targetRoom);
 
-        ArrayUnorderedList<Room> path = new ArrayUnorderedList<>();
+        ArrayUnorderedList<PathWithWeight<Room>> path = new ArrayUnorderedList<>();
 
         while (pathIterator.hasNext()) {
-            path.addToRear(pathIterator.next());
+            PathWithWeight<Room> pathWithWeight = pathIterator.next();
+            if (pathWithWeight.getRoom().equals(startRoom) == false) {
+                path.addToFront(pathWithWeight);
+            }
         }
 
         return path;
     }
-    public void automaticSimulation() {
-        Room startRoom = agent.getCurrentRoom();
-        Room targetRoom = target.getRoom();
-        Room exitRoom = findNearestExit(startRoom); // Encontrar a sala de entrada-saída mais próxima
 
-        // Enquanto o agente não alcançar o alvo e sair
-        while (!agent.getCurrentRoom().equals(targetRoom)) {
 
-            // Encontrar o caminho mais curto até o alvo
-            ArrayUnorderedList<Room> pathToTarget = findBestPathToTarget(startRoom, targetRoom);
-
-            // Verifica se o caminho está vazio (não é possível encontrar um caminho)
-            if (pathToTarget.isEmpty()) {
-                System.out.println("Não é possível encontrar um caminho até o alvo devido à movimentação dos inimigos.");
-                break; // Interrompe a simulação se não houver caminho
-            }
-
-            // O agente segue automaticamente o caminho até o alvo
-            for (Room room : pathToTarget) {
-
-                moveAgentToRoom(room); // Move o agente para a próxima sala
-                System.out.println("Agente movido para a sala: " + room.getName());
-
-                // Se houver inimigos na sala, o agente entra em combate automaticamente
-                if (!room.getEnemies().isEmpty()) {
-                    System.out.println("Inimigos detectados na sala: " + room.getName());
-                    processCombat(room); // Processa o combate na sala
-                    if (room.getEnemies().isEmpty()) {
-                        System.out.println("Todos os inimigos foram derrotados na sala.");
-                    }
-                }
-
-                // Verifica se o agente chegou ao alvo
-                if (room.equals(targetRoom)) {
-                    System.out.println("Alvo alcançado! Agora, vamos sair.");
-                    break; // Saindo do loop assim que o alvo é resgatado
-                }
-            }
-
-            // Depois de mover o agente, os inimigos se movem
-            moveRandomlyEnemies(); // Atualiza a posição dos inimigos, o que pode afetar o caminho do agente
-        }
-
-        // Agora que o agente resgatou o alvo, é hora de ir para a sala de entrada-saída
-        if (exitRoom != null) {
-            System.out.println("Agora, o agente vai para a sala de entrada-saída: " + exitRoom.getName());
-            moveAgentToRoom(exitRoom);
-            System.out.println("Agente chegou à sala de entrada-saída! Parabéns, missão concluída!");
-        } else {
-            System.out.println("Não foi possível encontrar uma sala de entrada-saída.");
-        }
-    }
+//
+//    public void automaticSimulation() {
+//        Room startRoom = agent.getCurrentRoom();
+//        Room targetRoom = target.getRoom();
+//        Room exitRoom = findNearestExit(startRoom); // Encontrar a sala de entrada-saída mais próxima
+//
+//        // Enquanto o agente não alcançar o alvo e sair
+//        while (!agent.getCurrentRoom().equals(targetRoom)) {
+//
+//            // Encontrar o caminho mais curto até o alvo
+//            ArrayUnorderedList<Room> pathToTarget = findBestPathToTarget(startRoom, targetRoom);
+//
+//            // Verifica se o caminho está vazio (não é possível encontrar um caminho)
+//            if (pathToTarget.isEmpty()) {
+//                System.out.println("Não é possível encontrar um caminho até o alvo devido à movimentação dos inimigos.");
+//                break; // Interrompe a simulação se não houver caminho
+//            }
+//
+//            // O agente segue automaticamente o caminho até o alvo
+//            for (Room room : pathToTarget) {
+//
+//                moveAgentToRoom(room); // Move o agente para a próxima sala
+//                System.out.println("Agente movido para a sala: " + room.getName());
+//
+//                // Se houver inimigos na sala, o agente entra em combate automaticamente
+//                if (!room.getEnemies().isEmpty()) {
+//                    System.out.println("Inimigos detectados na sala: " + room.getName());
+//                    processCombat(room);
+//                    if (room.getEnemies().isEmpty()) {
+//                        System.out.println("Todos os inimigos foram derrotados na sala.");
+//                    } else {
+//                        System.out.println("Inimigos ainda estão vivos e contra-atacarão!");
+//                        handleEnemyAttack();
+//                    }
+//                }
+//
+//                // Verifica se o agente chegou ao alvo
+//                if (room.equals(targetRoom)) {
+//                    System.out.println("Alvo alcançado! Agora, vamos sair.");
+//                    break; // Saindo do loop assim que o alvo é resgatado
+//                }
+//            }
+//
+//            // Depois de mover o agente, os inimigos se movem
+//            moveRandomlyEnemies(); // Atualiza a posição dos inimigos, o que pode afetar o caminho do agente
+//        }
+//
+//        // Agora que o agente resgatou o alvo, é hora de ir para a sala de entrada-saída
+//        if (exitRoom != null) {
+//            System.out.println("Agora, o agente vai para a sala de entrada-saída: " + exitRoom.getName());
+//            moveAgentToRoom(exitRoom);
+//            System.out.println("Agente chegou à sala de entrada-saída! Parabéns, missão concluída!");
+//        } else {
+//            System.out.println("Não foi possível encontrar uma sala de entrada-saída.");
+//        }
+//    }
 
 }
 
