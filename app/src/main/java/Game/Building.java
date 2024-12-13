@@ -18,10 +18,9 @@ import java.util.Iterator;
 
 
 public class Building {
-    //private UnorderedListADT<Room> rooms;
-    //private UnorderedListADT<Connection> connections;
+
     private Network<Room> map;
-    //private ArrayUnorderedList<Room> entryExitRooms;
+
 
     /**
      * Constructs a new Building with empty rooms, connections, and a map.
