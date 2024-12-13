@@ -1,5 +1,10 @@
 package Game;
 
+/**
+ * Represents the simulation of a mission where an agent must rescue a target and safely exit a building.
+ * The simulation includes turn-based interactions between the agent, enemies, and other elements within the building.
+ */
+
 import Game.Item.BulletProofVest;
 import Game.Item.HealthKit;
 import Game.Item.Item;
@@ -11,13 +16,25 @@ import Structures.collections.lists.ArrayUnorderedList;
 import java.util.Iterator;
 import java.util.Scanner;
 
+/**
+ * This class handles the logic and flow of the mission simulation.
+ * It manages the agent, target, enemies, and building components while executing a turn-based game loop.
+ */
+
 public class MissionSimulator {
     private Mission mission;
     private Agent agent;
     private Target target;
     private Room initialRoom;
     private boolean enemiesMovedThisTurn;
-    private boolean isPlayerTurn; // Flag para controlar o turno do jogador
+    private boolean isPlayerTurn;
+
+    /**
+     * Constructs a new MissionSimulator.
+     *
+     * @param mission The mission being simulated.
+     * @param agent   The agent involved in the mission.
+     */
 
     public MissionSimulator(Mission mission, Agent agent) {
         this.mission = mission;
@@ -30,20 +47,23 @@ public class MissionSimulator {
     }
 
     /**
-     * Lógica dos turnos do jogo
+     * Starts the main game loop for the mission simulation.
+     *
+     * @param automatic If true, the agent will make automatic decisions; otherwise, manual player input is required.
      */
+
     public void startGameLoop(boolean automatic) {
         boolean gameOver = false;
 
         while (!gameOver) {
-            if (isPlayerTurn) {  // Se for o turno do jogador é True
+            if (isPlayerTurn) {
                 System.out.println("========AGENT=========");
-                System.out.println("Name:"+ agent.getName());
+                System.out.println("Name:" + agent.getName());
                 System.out.println("HP:" + agent.getHealth());
                 System.out.println("Power:" + agent.getPower());
                 processAgentTurn(automatic);
                 System.out.println("======================");
-            } else { // False é o turno dos inimigos
+            } else {
                 System.out.println("========ENEMY=========");
                 processEnemiesTurn();
                 System.out.println("======================");
@@ -57,16 +77,15 @@ public class MissionSimulator {
                 System.out.println("Congratulations! You have successfully completed the mission!");
                 gameOver = true;
             }
-            // Encerra o programa na consola
-            //System.exit(0);
         }
     }
 
     /**
-     * O agente move-se para uma nova sala.
+     * Moves the agent to a specified room.
      *
-     * @param newRoom
+     * @param newRoom The room to move the agent to.
      */
+
     public void moveAgentToRoom(Room newRoom) {
         if (mission.getBuilding().getRooms().contains(newRoom)) {
             agent.setCurrentRoom(newRoom);
@@ -80,11 +99,17 @@ public class MissionSimulator {
     }
 
     /**
-     * O agente decide ficar na sala atual.
+     * Keeps the agent in the current room.
      */
     public void stayInCurrentRoom() {
         System.out.println("Agent decided to stay in the current room: " + agent.getCurrentRoom().getName());
     }
+
+    /**
+     * Processes the agent's turn, allowing them to perform actions such as moving or engaging in combat.
+     *
+     * @param automatic If true, the agent's actions are determined automatically.
+     */
 
     public void processAgentTurn(boolean automatic) {
         Room currentRoom = agent.getCurrentRoom();
@@ -93,14 +118,12 @@ public class MissionSimulator {
             if (!currentRoom.getEnemies().isEmpty()) {
                 System.out.println("You cannot move while enemies are present in the room.");
             } else {
-                // Encontrar o caminho mais curto até o alvo
                 Room targetRoom = mission.getTarget().getRoom();
                 if (mission.getTarget().isRescued()) {
                     {
                         targetRoom = this.initialRoom;
                         ArrayUnorderedList<Room> targetRoomsExit = this.mission.getBuilding().getRoomsWithEntryExit();
 
-                        //Caminho que foi escolhido
                         ArrayUnorderedList<PathWithWeight<Room>> bestPathToTarget = null;
                         double bestPathToTargetWeight = Double.MAX_VALUE;
                         int caminhoAlternativas = 1;
@@ -133,9 +156,6 @@ public class MissionSimulator {
                     }
                 }
             }
-
-            //Dijktra
-            //TODO - Implementar
 
         } else {
             //System.out.println("Choose an action: (1) Move, (2) Stay, (3) Use Health Kit");
@@ -177,6 +197,12 @@ public class MissionSimulator {
         }
     }
 
+    /**
+     * Processes combat between the agent and enemies in the current room.
+     *
+     * @param room The room where combat is occurring.
+     */
+
     public void processCombat(Room room) {
         System.out.println("Combat initiated in division: " + room.getName());
         Iterator<Enemy> iterator = room.getEnemies().iterator(); // Obtém um iterador para os inimigos na sala
@@ -189,7 +215,7 @@ public class MissionSimulator {
 
             if (enemy.getHeatlh() <= 0) {
                 System.out.println(enemy.getName() + " was defeated!");
-                iterator.remove(); // Remove com segurança
+                iterator.remove();
 
             }
         }
@@ -204,6 +230,9 @@ public class MissionSimulator {
         }
     }
 
+    /**
+     * Handles enemy attacks during their turn.
+     */
     public void handleEnemyAttack() {
         System.out.println("Enemies are attacking!");
         for (Enemy enemy : agent.getCurrentRoom().getEnemies()) {
@@ -217,6 +246,9 @@ public class MissionSimulator {
         }
     }
 
+    /**
+     * Moves enemies to random rooms within the building.
+     */
     public void moveRandomlyEnemies() {
         Room agentRoom = agent.getCurrentRoom();
         for (Room room : mission.getBuilding().getRooms()) {
@@ -232,6 +264,9 @@ public class MissionSimulator {
         }
     }
 
+    /**
+     * Processes the turn for all enemies, including moving and attacking.
+     */
     public void processEnemiesTurn() {
         Room currentRoom = agent.getCurrentRoom();
 
@@ -246,6 +281,9 @@ public class MissionSimulator {
         moveRandomlyEnemies();
     }
 
+    /**
+     * Processes interaction between the agent and the mission's target.
+     */
     public void processTargetInteraction() {
         // Cenário 5: Alvo com inimigos na sala
         if (!agent.getCurrentRoom().getEnemies().isEmpty()) {
@@ -258,6 +296,9 @@ public class MissionSimulator {
         }
     }
 
+    /**
+     * Uses a health kit from the agent's inventory to restore health.
+     */
     public void useHealthKit() {
         if (!agent.getInventory().isEmpty()) {
             HealthKit kit = agent.getInventory().pop();
@@ -268,6 +309,11 @@ public class MissionSimulator {
         }
     }
 
+    /**
+     * Verifies and handles items in a room when the agent enters it.
+     *
+     * @param newRoom The room being entered.
+     */
     public void verifyRoomItems(Room newRoom) {
         Room currentRoom = agent.getCurrentRoom();
 
@@ -294,9 +340,9 @@ public class MissionSimulator {
     }
 
     /**
-     * Get user input for choosing an action.
+     * Captures player input for choosing an action.
      *
-     * @return
+     * @return The chosen action.
      */
     private int getPlayerAction() {
         Scanner scanner = new Scanner(System.in);
@@ -319,9 +365,9 @@ public class MissionSimulator {
     }
 
     /**
-     * Player chooses a room to move to.
+     * Allows the player to choose a room to move to.
      *
-     * @return
+     * @return The chosen room.
      */
     public Room chooseRoomToMove() {
         Room currentRoom = agent.getCurrentRoom();
@@ -352,6 +398,10 @@ public class MissionSimulator {
         return adjacentRooms.get(chosenRoomIndex);
     }
 
+    /**
+     * Checks if the agent is at an exit room and, if not, guides them to the nearest one.
+     */
+
     public void checkAndMoveToExit() {
         Room currentRoom = agent.getCurrentRoom();
 
@@ -375,11 +425,12 @@ public class MissionSimulator {
     }
 
     /**
-     * Encontra a saída mais próxima para o agente sair do edifício.
+     * Finds the nearest exit room to the agent's current location.
      *
-     * @param currentRoom
-     * @return
+     * @param currentRoom The agent's current room.
+     * @return The nearest exit room.
      */
+
     public Room findNearestExit(Room currentRoom) {
         Network<Room> buildingNetwork = mission.getBuilding().getMap();
         ArrayUnorderedList<Room> entryExitRooms = mission.getBuilding().getRoomsWithEntryExit();
@@ -398,25 +449,15 @@ public class MissionSimulator {
         return nearestExit;
     }
 
-
+    /**
+     * Ends the current turn, resetting relevant states.
+     */
     public void endTurn() {
         enemiesMovedThisTurn = false;
     }
 
     public Mission getMission() {
         return mission;
-    }
-
-    public void setMission(Mission mission) {
-        this.mission = mission;
-    }
-
-    public Agent getAgent() {
-        return agent;
-    }
-
-    public void setAgent(Agent agent) {
-        this.agent = agent;
     }
 
     public Target getTarget() {
@@ -427,31 +468,13 @@ public class MissionSimulator {
         this.target = target;
     }
 
-    public Room getinitialRoom() {
-        return initialRoom;
-    }
-
-    public void setinitialRoom(Room initialRoom) {
-        this.initialRoom = initialRoom;
-    }
-
-
-    public boolean isEnemiesMovedThisTurn() {
-        return enemiesMovedThisTurn;
-    }
-
-    public void setEnemiesMovedThisTurn(boolean enemiesMovedThisTurn) {
-        this.enemiesMovedThisTurn = enemiesMovedThisTurn;
-    }
-
-    public boolean isPlayerTurn() {
-        return isPlayerTurn;
-    }
-
-    public void setPlayerTurn(boolean playerTurn) {
-        isPlayerTurn = playerTurn;
-    }
-
+    /**
+     * Finds the best path from the agent's current room to a target room.
+     *
+     * @param startRoom  The room where the agent starts.
+     * @param targetRoom The target room.
+     * @return A list of paths with their respective weights.
+     */
     public ArrayUnorderedList<PathWithWeight<Room>> findBestPathToTarget(Room startRoom, Room targetRoom) {
         Network<Room> buildingNetwork = mission.getBuilding().getMap();
 

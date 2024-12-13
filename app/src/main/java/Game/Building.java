@@ -9,14 +9,28 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 
-
+/**
+ * Represents a building consisting of rooms and connections between them.
+ * It handles the creation of a map (graph) for the building, the calculation of edge weights
+ * based on the enemies in the rooms, and visualizes the building as a graph.
+ */
 public class Building {
+
+    /** List of rooms in the building */
     private UnorderedListADT<Room> rooms;
+
+    /** List of connections between rooms */
     private UnorderedListADT<Connection> connections;
+
+    /** Graph representing the map of the building */
     private Network<Room> map;
+
+    /** List of rooms that are entry/exit points */
     private ArrayUnorderedList<Room> entryExitRooms;
 
-
+    /**
+     * Constructs a new Building with empty rooms, connections, and a map.
+     */
     public Building() {
         this.rooms = new ArrayUnorderedList<>();
         this.connections = new UnorderedLinkedList<>();
@@ -24,8 +38,10 @@ public class Building {
         this.entryExitRooms = new ArrayUnorderedList<>();
     }
 
-
-
+    /**
+     * Generates the map for the building by adding vertices and edges to the graph.
+     * Vertices represent rooms, and edges represent connections between rooms with associated weights.
+     */
     public void generateMap() {
         for (Room room : rooms) {
             map.addVertex(room);
@@ -39,14 +55,15 @@ public class Building {
         }
 
         System.out.println("Mapa gerado com sucesso!");
-        //System.out.println(map.getClass());
     }
 
     /**
-     * Calcula o peso entre duas salas (ligações)
-     * @param room1
-     * @param room2
-     * @return
+     * Calculates the weight between two rooms based on the enemies in them.
+     * The weight is the sum of the powers of the enemies in both rooms.
+     *
+     * @param room1 The first room
+     * @param room2 The second room
+     * @return The calculated weight between the two rooms
      */
     private double calculateWeight(Room room1, Room room2) {
         double weight = 0.0;
@@ -63,7 +80,7 @@ public class Building {
     }
 
     /**
-     * Atualiza os pesos das arestas do grafo
+     * Updates the weights of the edges in the graph based on the current enemies in the rooms.
      */
     public void updateWeights() {
         for (Connection connection : connections) {
@@ -72,37 +89,42 @@ public class Building {
             double weight = calculateWeight(room1, room2);
 
             if(map.hasEdge(room1, room2)){
-                // Atualiza o peso da aresta
+                // Updates the weight of the edge
                 map.setEdgeWeight(room1, room2, weight);
             }
         }
     }
 
+    /**
+     * Visualizes the building map as a graph using the GraphStream library.
+     * Rooms are displayed as nodes, and connections are displayed as edges with weights.
+     * Rooms with enemies are styled differently (red and larger) than those without (green).
+     */
     public void visualizeGraph() {
         System.setProperty("org.graphstream.ui", "swing");
 
-        // Cria o grafo
+        // Creates the graph
         Graph graph = new SingleGraph("Building Map");
 
-        // Adiciona os nós (salas)
+        // Adds nodes (rooms) to the graph
         for (Room room : rooms) {
             Node node = graph.addNode(room.getName());
-            String nodeLabel = room.getName();  // Começa com o nome da sala
+            String nodeLabel = room.getName();  // Start with the room name
 
-            // Verifica se há inimigos e altera o estilo do nó (cor e formato)
+            // Checks if there are enemies in the room and changes the node style
             if (!room.getEnemies().isEmpty()) {
-                int numEnemies = room.getEnemies().size();  // Número de inimigos na sala
-                nodeLabel += " (" + numEnemies + " inimigos)";  // Adiciona o número de inimigos ao rótulo
+                int numEnemies = room.getEnemies().size();  // Number of enemies in the room
+                nodeLabel += " (" + numEnemies + " inimigos)";  // Adds number of enemies to the label
                 node.addAttribute("ui.style", "shape: box; fill-color: red; size: 50px, 50px; text-alignment: center; text-size: 15px;");
             } else {
                 node.addAttribute("ui.style", "shape: box; fill-color: green; size: 50px, 50px; text-alignment: center; text-size: 15px;");
             }
 
-            // Define o rótulo do nó com o nome da sala e o número de inimigos, se aplicável
+            // Sets the label for the node
             node.addAttribute("ui.label", nodeLabel);
         }
 
-        // Adiciona as arestas (ligações) com pesos
+        // Adds edges (connections) to the graph with weights
         for (Room room1 : rooms) {
             for (Room room2 : rooms) {
                 if (!room1.equals(room2) && map.hasEdge(room1, room2)) {
@@ -114,41 +136,74 @@ public class Building {
             }
         }
 
-        // Definindo o layout
+        // Sets the style for the graph
         graph.addAttribute("ui.stylesheet", "node { text-size: 15; shape: box; fill-color: #A0C4FF; } edge { fill-color: #666; size: 2px; }");
 
-        // Layout de grid para as salas se posicionarem como uma planta
+        // Adds layout properties
         graph.addAttribute("layout.force", 1.0);
         graph.addAttribute("layout.grid", true);
 
-        // Exibe o gráfico
+        // Displays the graph
         graph.display();
     }
 
+    /**
+     * Gets the list of connections in the building.
+     *
+     * @return The list of connections
+     */
     public UnorderedListADT<Connection> getConnections() {
         return connections;
     }
 
+    /**
+     * Sets the list of connections in the building.
+     *
+     * @param connections The list of connections to set
+     */
     public void setConnections(UnorderedListADT<Connection> connections) {
         this.connections = connections;
     }
 
+    /**
+     * Gets the list of rooms in the building.
+     *
+     * @return The list of rooms
+     */
     public UnorderedListADT<Room> getRooms() {
         return rooms;
     }
 
+    /**
+     * Sets the list of rooms in the building.
+     *
+     * @param rooms The list of rooms to set
+     */
     public void setRooms(UnorderedListADT<Room> rooms) {
         this.rooms = rooms;
     }
 
+    /**
+     * Gets the map of the building, which is represented as a graph.
+     *
+     * @return The building map
+     */
     public Network<Room> getMap() {
         return map;
     }
 
+    /**
+     * Sets the map of the building.
+     *
+     * @param map The map to set
+     */
     public void setMap(Network<Room> map) {
         this.map = map;
     }
 
+    /**
+     * Stores rooms that are designated as entry/exit rooms in the building.
+     */
     public void storeEntryExitRooms() {
         for (Room room : rooms) {
             if (room.isEntryExit()) {
@@ -157,14 +212,20 @@ public class Building {
         }
     }
 
+    /**
+     * Gets the list of entry/exit rooms in the building.
+     *
+     * @return The list of entry/exit rooms
+     */
     public ArrayUnorderedList<Room> getRoomsWithEntryExit() {
         return entryExitRooms;
     }
 
-
-
-
-
+    /**
+     * Returns a string representation of the building, including the names of the rooms.
+     *
+     * @return A string representation of the building
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -172,9 +233,6 @@ public class Building {
         for (Room room : rooms) {
             sb.append(room.getName()).append("\n");
         }
-        //sb.append("Mapa:\n");
-        //sb.append(map.toString());
         return sb.toString();
     }
 }
-

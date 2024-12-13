@@ -9,14 +9,33 @@ import Structures.collections.lists.ArrayUnorderedList;
 import java.util.Iterator;
 import java.util.Random;
 
-
+/**
+ * Represents an enemy in the game that can move between rooms and take damage.
+ * The enemy has a name, power, health, and the room it currently occupies.
+ * Enemies can move randomly within a building and interact with the environment.
+ */
 public class Enemy {
+
+    /** The name of the enemy */
     private String name;
+
+    /** The health of the enemy */
     private int heatlh;
+
+    /** The power of the enemy */
     private int power;
+
+    /** The room where the enemy is currently located */
     private Room room;
 
-
+    /**
+     * Constructs a new Enemy with the specified name, power, and initial room.
+     * The enemy's health is set to 100 by default.
+     *
+     * @param name The name of the enemy
+     * @param power The power of the enemy
+     * @param room The room where the enemy is initially located
+     */
     public Enemy(String name, int power, Room room) {
         this.name = name;
         this.power = power;
@@ -24,54 +43,103 @@ public class Enemy {
         this.heatlh = 100;
     }
 
-
+    /**
+     * Gets the name of the enemy.
+     *
+     * @return The name of the enemy
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name of the enemy.
+     *
+     * @param nome The name to set for the enemy
+     */
     public void setName(String nome) {
         this.name = nome;
     }
 
+    /**
+     * Gets the power of the enemy.
+     *
+     * @return The power of the enemy
+     */
     public int getPower() {
         return power;
     }
 
+    /**
+     * Sets the power of the enemy.
+     *
+     * @param power The power to set for the enemy
+     */
     public void setPower(int power) {
         this.power = power;
     }
 
+    /**
+     * Gets the room where the enemy is currently located.
+     *
+     * @return The room where the enemy is located
+     */
     public Room getRoom() {
         return room;
     }
 
+    /**
+     * Sets the room where the enemy is located.
+     *
+     * @param room The room to set for the enemy
+     */
     public void setRoom(Room room) {
         this.room = room;
     }
 
+    /**
+     * Gets the current health of the enemy.
+     *
+     * @return The current health of the enemy
+     */
     public int getHeatlh() {
         return heatlh;
     }
 
+    /**
+     * Sets the health of the enemy.
+     *
+     * @param heatlh The health to set for the enemy
+     */
     public void setHeatlh(int heatlh) {
         this.heatlh = heatlh;
     }
 
+    /**
+     * Reduces the enemy's health by a given damage amount.
+     *
+     * @param damage The amount of damage to subtract from the enemy's health
+     */
     public void takeDamage(int damage) {
         heatlh -= damage;
     }
 
     /**
-     * Enemies move randomly up to two divisions from your position.
+     * Moves the enemy randomly up to two rooms away from its current position.
+     * The movement is based on the connectivity of the rooms in the building.
+     * The enemy will move to a randomly chosen room from the available rooms
+     * within two steps of its current position.
      *
-     * @param network
+     * @param network The network of rooms in the building
+     * @param building The building where the enemy resides, used to update room weights
      */
     public void moveRandomly(Network<Room> network, Building building) {
         Room currentRoom = this.getRoom();
 
+        // Finds neighbors of the current room
         Iterator<Room> iteratorConnections = network.findNeighbors(currentRoom);
 
-        // Armazena as salas vizinhas
+        // Stores adjacent rooms
         ArrayUnorderedList<Room> adjacentRooms = new ArrayUnorderedList<>();
         while (iteratorConnections.hasNext()) {
             var room = iteratorConnections.next();
@@ -80,56 +148,37 @@ public class Enemy {
             }
         }
 
-        // Armazena as salas a até duas divisões de distância
+        // Stores rooms up to two steps away
         ArrayUnorderedList<Room> twoStepRooms = new ArrayUnorderedList<>();
 
-        // Adiciona as salas adjacentes das salas adjacentes
+        // Adds adjacent rooms from adjacent rooms
         for (Room adjacentRoom : adjacentRooms) {
-            twoStepRooms.addToRear(adjacentRoom);  // Adiciona a sala adjacente
+            twoStepRooms.addToRear(adjacentRoom);  // Adds the adjacent room
 
             iteratorConnections = network.findNeighbors(adjacentRoom);
 
             while (iteratorConnections.hasNext()) {
-                  room = iteratorConnections.next();
+                room = iteratorConnections.next();
                 if (twoStepRooms.contains(room) == false) {
                     twoStepRooms.addToRear(room);
                 }
             }
         }
 
-        // Verifica se há salas a até duas divisões de distância
+        // If no rooms are found within two steps, the enemy cannot move
         if (twoStepRooms.isEmpty()) {
             System.out.println(name + " não pode se mover. Nenhuma sala vizinha encontrada. Sala atual:" + currentRoom.getName());
-            return; // Não move se não houver salas vizinhas
+            return; // No movement if no neighboring rooms are found
         }
 
-        // Escolhe aleatoriamente uma sala a até duas divisões de distância usando Random
+        // Randomly selects a room from the rooms within two steps
         Random rand = new Random();
         Room newRoom = twoStepRooms.get(rand.nextInt(twoStepRooms.size()));
 
-        // Define a nova sala do inimigo
+        // Sets the new room for the enemy
         this.setRoom(newRoom);
         System.out.println(name + " moveu-se para " + newRoom.getName());
 
-        building.updateWeights();
-        //System.out.println("Pesos atualizados.");
+        building.updateWeights();  // Updates the building's room weights
     }
-
-
-
-
-/*
-    @Override
-    public String toString() {
-        String text = "";
-
-        text += "Nome: " + name + "\n";
-        text += "Vida: " + heatlh + "\n";
-        text += "Ataque: " + power + "\n";
-        text += "Divisão: " + room.toString() + "\n";
-
-        return text;
-    }
- */
-
 }
