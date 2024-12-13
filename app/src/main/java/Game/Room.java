@@ -5,8 +5,6 @@ import Game.Item.Item;
 import Structures.collections.lists.ArrayUnorderedList;
 import Structures.collections.lists.UnorderedListADT;
 
-import java.util.Iterator;
-
 public class Room {
     private String name;
     private String classification;
@@ -15,7 +13,7 @@ public class Room {
 
     public Room(String name) {
         this.name = name;
-        this.classification = "normal";
+        this.classification = "normal"; // default classification
         this.enemies = new ArrayUnorderedList<>();
         this.items = new ArrayUnorderedList<>();
     }
@@ -81,6 +79,10 @@ public class Room {
         }
     }
 
+    /**
+     * Verifica se a sala é uma sala de entrada/saída
+     * @return
+     */
     public boolean isEntryExit() {
         return "entrada-saida".equalsIgnoreCase(classification);
     }

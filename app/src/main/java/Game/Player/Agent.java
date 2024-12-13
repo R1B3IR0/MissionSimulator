@@ -3,7 +3,10 @@ package Game.Player;
 import Game.Item.HealthKit;
 import Game.Item.Item;
 import Game.Room;
+import Structures.collections.lists.ArrayUnorderedList;
 import Structures.collections.stacks.ArrayStack;
+
+import java.util.Scanner;
 
 public class Agent{
 
@@ -70,6 +73,29 @@ public class Agent{
 
     public boolean isOutsideBuilding() {
         return currentRoom == null;
+    }
+
+    public void chooseEntryExitRoom(ArrayUnorderedList<Room> entryExitRooms) {
+        if (entryExitRooms.isEmpty()) {
+            System.out.println("Nenhuma sala de entrada-saída disponível.");
+            return;
+        }
+
+
+        for (int i = 0; i < entryExitRooms.size(); i++) {
+            System.out.println((i + 1) + ". " + entryExitRooms.get(i).getName());
+        }
+        System.out.println("Escolha uma sala de entrada-saída para começar:");
+        Scanner scanner = new Scanner(System.in);
+        int chosenRoomIndex = scanner.nextInt() - 1;  // Ajusta para índice zero
+        if (chosenRoomIndex < 0 || chosenRoomIndex >= entryExitRooms.size()) {
+            System.out.println("Escolha inválida. O jogo será encerrado.");
+            return;
+        }
+
+        Room chosenRoom = entryExitRooms.get(chosenRoomIndex);
+        setCurrentRoom(chosenRoom);
+        System.out.println("Agente começa na sala: " + chosenRoom.getName());
     }
 
 

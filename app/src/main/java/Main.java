@@ -9,8 +9,9 @@ import Structures.collections.lists.ArrayUnorderedList;
 import java.util.Scanner;
 
 public class Main {
-
+/*
     public static void main(String[] args) {
+
         // Caminho do arquivo JSON (ajuste conforme necessário)
         String filePath = "app//src//main//resources//mission.json";
 
@@ -109,4 +110,5 @@ public class Main {
 
         scanner.close();
     }
+ */
 }

@@ -1,6 +1,7 @@
 package Game.Player;
 
 import Game.Building;
+import Game.Connection;
 import Game.Room;
 import Structures.collections.graphs.Network;
 import Structures.collections.lists.ArrayUnorderedList;
@@ -68,19 +69,14 @@ public class Enemy {
     public void moveRandomly(Network<Room> network, Building building) {
         Room currentRoom = this.getRoom();
 
-        // Obtém um iterador para os vértices (salas) na rede
-        Iterator<Room> iterator = network.vertexIterator();
+        Iterator<Room> iteratorConnections = network.findNeighbors(currentRoom);
 
         // Armazena as salas vizinhas
         ArrayUnorderedList<Room> adjacentRooms = new ArrayUnorderedList<>();
-
-        // Percorre os vértices adjacentes
-        while (iterator.hasNext()) {
-            Room adjacentRoom = iterator.next();
-
-            // Verifica se existe uma aresta entre as duas salas
-            if (network.getWeight(currentRoom, adjacentRoom) != Double.POSITIVE_INFINITY) {
-                adjacentRooms.addToRear(adjacentRoom);  // Adiciona a sala vizinha
+        while (iteratorConnections.hasNext()) {
+            var room = iteratorConnections.next();
+            if (adjacentRooms.contains(room) == false) {
+                adjacentRooms.addToRear(room);
             }
         }
 
@@ -91,19 +87,19 @@ public class Enemy {
         for (Room adjacentRoom : adjacentRooms) {
             twoStepRooms.addToRear(adjacentRoom);  // Adiciona a sala adjacente
 
-            iterator = network.vertexIterator();
+            iteratorConnections = network.findNeighbors(adjacentRoom);
 
-            while (iterator.hasNext()) {
-                Room twoStepRoom = iterator.next();
-                if (network.getWeight(adjacentRoom, twoStepRoom) != Double.POSITIVE_INFINITY && !twoStepRooms.contains(twoStepRoom)) {
-                    twoStepRooms.addToRear(twoStepRoom);
+            while (iteratorConnections.hasNext()) {
+                  room = iteratorConnections.next();
+                if (twoStepRooms.contains(room) == false) {
+                    twoStepRooms.addToRear(room);
                 }
             }
         }
 
         // Verifica se há salas a até duas divisões de distância
         if (twoStepRooms.isEmpty()) {
-            System.out.println(name + " não pode se mover. Nenhuma sala vizinha encontrada.");
+            System.out.println(name + " não pode se mover. Nenhuma sala vizinha encontrada. Sala atual:" + currentRoom.getName());
             return; // Não move se não houver salas vizinhas
         }
 
@@ -113,10 +109,10 @@ public class Enemy {
 
         // Define a nova sala do inimigo
         this.setRoom(newRoom);
-        System.out.println(name + " se moveu para " + newRoom.getName());
+        System.out.println(name + " moveu-se para " + newRoom.getName());
 
         building.updateWeights();
-        System.out.println("Pesos atualizados.");
+        //System.out.println("Pesos atualizados.");
     }
 
 

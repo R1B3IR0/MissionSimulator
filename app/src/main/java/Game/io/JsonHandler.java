@@ -15,7 +15,7 @@ import Game.Player.Enemy;
 
 public class JsonHandler {
 
-    public static Building importJson(String filePath) {
+    public static Mission importJson(String filePath) {
         JSONParser parser = new JSONParser();
         try (FileReader reader = new FileReader(filePath)) {
             JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -24,7 +24,10 @@ public class JsonHandler {
             Building building = new Building();
             JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
             for (Object location : edificioArray) {
-                building.getRooms().addToRear(new Room((String) location));
+                Room room = new Room((String) location);
+                if (!building.getRooms().contains(room)) {
+                    building.addRoom(room);
+                }
             }
 
             // Parse ligações
@@ -88,7 +91,7 @@ public class JsonHandler {
                 }
             }
 
-            return building;
+            return mission;
         } catch (IOException | ParseException e) {
             e.printStackTrace();
             return null;
