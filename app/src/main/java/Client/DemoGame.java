@@ -20,7 +20,7 @@ public class DemoGame {
 
             Building building = mission.getBuilding();
             building.generateMap();
-            building.storeEntryExitRooms(); // Guarda as salas de entrada e saída
+            building.getRoomsWithEntryExit(); // Guarda as salas de entrada e saída
 
             Agent agent = new Agent();
 

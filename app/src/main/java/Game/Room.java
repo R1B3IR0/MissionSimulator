@@ -5,8 +5,6 @@ import Game.Item.Item;
 import Structures.collections.lists.ArrayUnorderedList;
 import Structures.collections.lists.UnorderedListADT;
 
-import java.util.Iterator;
-
 public class Room {
     private String name;
     private String classification;
