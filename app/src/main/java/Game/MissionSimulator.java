@@ -12,6 +12,7 @@ import Game.Player.Agent;
 import Game.Player.Enemy;
 import Structures.collections.graphs.Network;
 import Structures.collections.lists.ArrayUnorderedList;
+import Structures.collections.lists.UnorderedListADT;
 
 import java.util.Iterator;
 import java.util.Scanner;
@@ -205,6 +206,7 @@ public class MissionSimulator {
     public void processCombat(Room room) {
         System.out.println("Combat initiated in division: " + room.getName());
         Iterator<Enemy> iterator = room.getEnemies().iterator(); // Obtém um iterador para os inimigos na sala
+        UnorderedListADT<Enemy> enemiesToRemove = new ArrayUnorderedList<>(); // Lista temporária para armazenar inimigos a serem removidos
 
         // Cenário 1: Fase do jogador (Tó Cruz ataca os inimigos que estão na sala)
         while (iterator.hasNext()) {
@@ -214,8 +216,24 @@ public class MissionSimulator {
 
             if (enemy.getHeatlh() <= 0) {
                 System.out.println(enemy.getName() + " was defeated!");
-                iterator.remove();
+                enemiesToRemove.addToRear(enemy); // Adiciona o inimigo à lista de remoção
+            }
+        }
 
+        // Remove os inimigos derrotados após o loop
+        for (Enemy enemy : enemiesToRemove) {
+            room.removeEnemy(enemy);
+        }
+
+        // Cenário 1: Fase do jogador (Tó Cruz ataca os inimigos que estão na sala)
+        while (iterator.hasNext()) {
+            Enemy enemy = iterator.next();
+            enemy.takeDamage(agent.getPower()); // Aplica dano a todos os inimigos na sala
+            System.out.println("Agent attacked " + enemy.getName() + ". Enemy current health: " + enemy.getHeatlh());
+
+            if (enemy.getHeatlh() <= 0) {
+                System.out.println(enemy.getName() + " was defeated!");
+                room.removeEnemy(enemy);
             }
         }
 
