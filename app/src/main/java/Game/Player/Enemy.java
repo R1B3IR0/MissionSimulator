@@ -68,14 +68,23 @@ public class Enemy {
     public void moveRandomly(Network<Room> network, Building building) {
         Room currentRoom = this.getRoom();
 
-        // Obtém um iterador para os vértices (salas) na rede
+        // Obtém um iterador para os vértices (salas) no grafo
         Iterator<Room> iterator = network.vertexIterator();
+
+        while (iterator.hasNext()) {
+            Room room = iterator.next();
+            System.out.println("Sala atual: " + currentRoom.getName() + "sala adjacente: " + room.getName());
+            if (room.equals(currentRoom)) {
+                break;
+            }
+        }
+
 
         // Armazena as salas vizinhas
         ArrayUnorderedList<Room> adjacentRooms = new ArrayUnorderedList<>();
 
         // Percorre os vértices adjacentes
-        while (iterator.hasNext()) {
+        if (iterator.hasNext()) { // Itera a primeira vez
             Room adjacentRoom = iterator.next();
 
             // Verifica se existe uma aresta entre as duas salas
@@ -91,9 +100,9 @@ public class Enemy {
         for (Room adjacentRoom : adjacentRooms) {
             twoStepRooms.addToRear(adjacentRoom);  // Adiciona a sala adjacente
 
-            Iterator<Room> iterator2 = network.vertexIterator();
+            iterator = network.vertexIterator();
 
-            while (iterator2.hasNext()) {
+            if (iterator.hasNext()) { // Itera a segunda vez
                 Room twoStepRoom = iterator.next();
                 if (network.getWeight(adjacentRoom, twoStepRoom) != Double.POSITIVE_INFINITY && !twoStepRooms.contains(twoStepRoom)) {
                     twoStepRooms.addToRear(twoStepRoom);
@@ -103,7 +112,7 @@ public class Enemy {
 
         // Verifica se há salas a até duas divisões de distância
         if (twoStepRooms.isEmpty()) {
-            System.out.println(name + " não pode se mover. Nenhuma sala vizinha encontrada.");
+            System.out.println(name + " não pode se mover. Nenhuma sala vizinha encontrada. Sala atual:" + currentRoom.getName());
             return; // Não move se não houver salas vizinhas
         }
 

@@ -267,7 +267,11 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return distances[targetIndex];
     }
 
-    //Iterator novo
+    /**
+     * Returns an iterator over the vertices in the network.
+     *
+     * @return an iterator over the vertices in the network
+     */
     public Iterator<T> vertexIterator() {
         return new Iterator<T>() {
             private int index = 0;
@@ -279,7 +283,7 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
 
             @Override
             public T next() {
-                return vertices[index++];  // Retorna o próximo vértice
+                return hasNext() ? vertices[index++] : null;// Retorna o próximo vértice
             }
         };
     }

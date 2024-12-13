@@ -187,19 +187,6 @@ public class MissionSimulator {
         moveRandomlyEnemies();
     }
 
-    public void processItemUse() {
-        if (!agent.getInventory().isEmpty()) {
-            HealthKit kit = agent.getInventory().pop();
-            int healingPoints = kit.getPointsRecovered();
-            System.out.println("Agent used a HealthKit and recovered " + healingPoints + " health points.");
-            System.out.println("Current health: " + agent.getHealth());
-        } else if (agent.getHealth() >= 100) {
-            System.out.println("Life is full, I can't heal!");
-        } else if (agent.getInventory().isEmpty()) {
-            System.out.println("No healing items available!");
-        }
-    }
-
     public void processTargetInteraction() {
         // Cenário 5: Alvo com inimigos na sala
         if (!agent.getCurrentRoom().getEnemies().isEmpty()) {

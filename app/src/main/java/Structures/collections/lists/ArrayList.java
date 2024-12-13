@@ -37,7 +37,6 @@ public abstract class ArrayList<T> implements ListADT<T> {
     }
 
 
-
     @Override
     public T removeFirst() throws EmptyCollectionException {
         if(isEmpty()) {
@@ -100,8 +99,6 @@ public abstract class ArrayList<T> implements ListADT<T> {
             throw new IndexOutOfBoundsException("Índice fora dos limites: " + index);
         }
     }
-
-
 
 
     @Override
