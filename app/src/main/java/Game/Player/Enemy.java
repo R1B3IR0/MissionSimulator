@@ -109,10 +109,10 @@ public class Enemy {
 
         // Define a nova sala do inimigo
         this.setRoom(newRoom);
-        System.out.println(name + " se moveu para " + newRoom.getName());
+        System.out.println(name + " moveu-se para " + newRoom.getName());
 
         building.updateWeights();
-        System.out.println("Pesos atualizados.");
+        //System.out.println("Pesos atualizados.");
     }
 
 

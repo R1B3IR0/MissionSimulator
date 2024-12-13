@@ -25,7 +25,7 @@ public class BulletProofVest extends Item {
         health += extraPoints;
         agent.setHealth(health);
 
-        System.out.println("Colete à prova de bala com " + extraPoints + " pontos adicionado.");
+       // System.out.println("Colete à prova de bala com " + extraPoints + " pontos adicionado.");
     }
 
 
