@@ -51,19 +51,18 @@ public class MissionSimulator {
      *
      * @param automatic If true, the agent will make automatic decisions; otherwise, manual player input is required.
      */
-
     public void startGameLoop(boolean automatic) {
         boolean gameOver = false;
 
         while (!gameOver) {
-            if (isPlayerTurn) {
+            if (isPlayerTurn) {  // Se for o turno do jogador é True
                 System.out.println("========AGENT=========");
-                System.out.println("Name:" + agent.getName());
+                System.out.println("Name:"+ agent.getName());
                 System.out.println("HP:" + agent.getHealth());
                 System.out.println("Power:" + agent.getPower());
                 processAgentTurn(automatic);
                 System.out.println("======================");
-            } else {
+            } else { // False é o turno dos inimigos
                 System.out.println("========ENEMY=========");
                 processEnemiesTurn();
                 System.out.println("======================");

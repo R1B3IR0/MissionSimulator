@@ -26,7 +26,7 @@ public class Room {
      */
     public Room(String name) {
         this.name = name;
-        this.classification = "normal"; // Default classification
+        this.classification = "normal"; // default classification
         this.enemies = new ArrayUnorderedList<>();
         this.items = new ArrayUnorderedList<>();
     }

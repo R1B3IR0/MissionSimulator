@@ -24,7 +24,10 @@ public class JsonHandler {
             Building building = new Building();
             JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
             for (Object location : edificioArray) {
-                building.getRooms().addToRear(new Room((String) location));
+                Room room = new Room((String) location);
+                if (!building.getRooms().contains(room)) {
+                    building.addRoom(room);
+                }
             }
 
             // Parse ligações

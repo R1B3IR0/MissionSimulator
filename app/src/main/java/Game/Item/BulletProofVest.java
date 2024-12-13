@@ -1,5 +1,6 @@
 package Game.Item;
 
+
 import Game.Player.Agent;
 import Game.Room;
 
@@ -52,4 +53,7 @@ public class BulletProofVest extends Item {
 
         // System.out.println("Colete à prova de bala com " + extraPoints + " pontos adicionado.");
     }
+
+
 }
+

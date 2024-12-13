@@ -14,28 +14,20 @@ import org.graphstream.graph.implementations.SingleGraph;
  * It handles the creation of a map (graph) for the building, the calculation of edge weights
  * based on the enemies in the rooms, and visualizes the building as a graph.
  */
+import java.util.Iterator;
+
+
 public class Building {
-
-    /** List of rooms in the building */
-    private UnorderedListADT<Room> rooms;
-
-    /** List of connections between rooms */
-    private UnorderedListADT<Connection> connections;
-
-    /** Graph representing the map of the building */
+    //private UnorderedListADT<Room> rooms;
+    //private UnorderedListADT<Connection> connections;
     private Network<Room> map;
-
-    /** List of rooms that are entry/exit points */
-    private ArrayUnorderedList<Room> entryExitRooms;
+    //private ArrayUnorderedList<Room> entryExitRooms;
 
     /**
      * Constructs a new Building with empty rooms, connections, and a map.
      */
     public Building() {
-        this.rooms = new ArrayUnorderedList<>();
-        this.connections = new UnorderedLinkedList<>();
         this.map = new Network<>();
-        this.entryExitRooms = new ArrayUnorderedList<>();
     }
 
     /**
@@ -43,11 +35,11 @@ public class Building {
      * Vertices represent rooms, and edges represent connections between rooms with associated weights.
      */
     public void generateMap() {
-        for (Room room : rooms) {
+        for (Room room : getRooms()) {
             map.addVertex(room);
         }
 
-        for (Connection connection : connections) {
+        for (Connection connection : getConnections()) {
             Room room1 = connection.getOrigin();
             Room room2 = connection.getDestination();
             double weight = calculateWeight(room1, room2);
@@ -83,7 +75,7 @@ public class Building {
      * Updates the weights of the edges in the graph based on the current enemies in the rooms.
      */
     public void updateWeights() {
-        for (Connection connection : connections) {
+        for (Connection connection : getConnections()) {
             Room room1 = connection.getOrigin();
             Room room2 = connection.getDestination();
             double weight = calculateWeight(room1, room2);
@@ -106,8 +98,8 @@ public class Building {
         // Creates the graph
         Graph graph = new SingleGraph("Building Map");
 
-        // Adds nodes (rooms) to the graph
-        for (Room room : rooms) {
+        // Adiciona os nós (salas)
+        for (Room room : getRooms()) {
             Node node = graph.addNode(room.getName());
             String nodeLabel = room.getName();  // Start with the room name
 
@@ -124,9 +116,9 @@ public class Building {
             node.addAttribute("ui.label", nodeLabel);
         }
 
-        // Adds edges (connections) to the graph with weights
-        for (Room room1 : rooms) {
-            for (Room room2 : rooms) {
+        // Adiciona as arestas (ligações) com pesos
+        for (Room room1 : getRooms()) {
+            for (Room room2 : getRooms()) {
                 if (!room1.equals(room2) && map.hasEdge(room1, room2)) {
                     double weight = map.getWeight(room1, room2);
                     String edgeId = room1.getName() + "-" + room2.getName();
@@ -147,47 +139,6 @@ public class Building {
         graph.display();
     }
 
-    /**
-     * Gets the list of connections in the building.
-     *
-     * @return The list of connections
-     */
-    public UnorderedListADT<Connection> getConnections() {
-        return connections;
-    }
-
-    /**
-     * Sets the list of connections in the building.
-     *
-     * @param connections The list of connections to set
-     */
-    public void setConnections(UnorderedListADT<Connection> connections) {
-        this.connections = connections;
-    }
-
-    /**
-     * Gets the list of rooms in the building.
-     *
-     * @return The list of rooms
-     */
-    public UnorderedListADT<Room> getRooms() {
-        return rooms;
-    }
-
-    /**
-     * Sets the list of rooms in the building.
-     *
-     * @param rooms The list of rooms to set
-     */
-    public void setRooms(UnorderedListADT<Room> rooms) {
-        this.rooms = rooms;
-    }
-
-    /**
-     * Gets the map of the building, which is represented as a graph.
-     *
-     * @return The building map
-     */
     public Network<Room> getMap() {
         return map;
     }
@@ -201,24 +152,72 @@ public class Building {
         this.map = map;
     }
 
+
     /**
-     * Stores rooms that are designated as entry/exit rooms in the building.
+     * Retorna todas as salas do edifício
+     * @return
      */
-    public void storeEntryExitRooms() {
-        for (Room room : rooms) {
-            if (room.isEntryExit()) {
-                entryExitRooms.addToRear(room);
+    public UnorderedListADT<Room> getRooms() {
+        UnorderedListADT<Room> allRooms = new ArrayUnorderedList<>();
+
+        Iterator<Room> roomIterator = map.vertexIterator();
+        while (roomIterator.hasNext()) {
+            Room room = roomIterator.next();
+            if(!allRooms.contains(room)){
+                allRooms.addToRear(room);
             }
         }
+
+        return allRooms;
     }
 
     /**
-     * Gets the list of entry/exit rooms in the building.
+     * Retorna as conexões do edifício
+     * @return
+     */
+    public UnorderedListADT<Connection> getConnections() {
+        UnorderedListADT<Connection> connections = new ArrayUnorderedList<>();
+
+        Iterator<Room> roomIterator = map.vertexIterator();
+
+        while (roomIterator.hasNext()) {
+            Room room = roomIterator.next();
+            Iterator<Room> neighborIterator = map.findNeighbors(room);
+
+            while (neighborIterator.hasNext()) {
+                Room neighbor = neighborIterator.next();
+                Connection connection = new Connection(room, neighbor);
+                if (!connections.contains(connection)) {
+                    connections.addToRear(connection);
+                }
+            }
+        }
+
+        return connections;
+    }
+
+
+    /**
+     * Retorna as salas de entrada e saída do edifício
      *
-     * @return The list of entry/exit rooms
+     * @return
      */
     public ArrayUnorderedList<Room> getRoomsWithEntryExit() {
-        return entryExitRooms;
+        UnorderedListADT<Room> entryExitRooms = new ArrayUnorderedList<>();
+
+        Iterator<Room> allRooms = map.vertexIterator();
+
+        while (allRooms.hasNext()) {
+            Room room = allRooms.next();
+
+            if (room.isEntryExit()) {
+                if (!entryExitRooms.contains(room)) {
+                    entryExitRooms.addToRear(room);
+                }
+            }
+        }
+
+        return (ArrayUnorderedList<Room>) entryExitRooms;
     }
 
     /**
@@ -230,9 +229,15 @@ public class Building {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Edifício:\n");
-        for (Room room : rooms) {
+        for (Room room : getRooms()) {
             sb.append(room.getName()).append("\n");
         }
         return sb.toString();
+    }
+
+    public void addRoom(Room room) {
+        if (!map.containsVertex(room)) {
+            map.addVertex(room);
+        }
     }
 }
