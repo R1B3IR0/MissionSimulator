@@ -56,16 +56,16 @@ public class MissionSimulator {
 
         while (!gameOver) {
             if (isPlayerTurn) {  // Se for o turno do jogador é True
-                System.out.println("========AGENT=========");
-                System.out.println("Name:"+ agent.getName());
-                System.out.println("HP:" + agent.getHealth());
-                System.out.println("Power:" + agent.getPower());
+                //System.out.println("========AGENT=========");
+                //System.out.println("Name:"+ agent.getName());
+                //System.out.println("HP:" + agent.getHealth());
+                //System.out.println("Power:" + agent.getPower());
                 processAgentTurn(automatic);
-                System.out.println("======================");
+                //System.out.println("======================");
             } else { // False é o turno dos inimigos
-                System.out.println("========ENEMY=========");
+                //System.out.println("========ENEMY=========");
                 processEnemiesTurn();
-                System.out.println("======================");
+                //System.out.println("======================");
             }
             endTurn();
 
@@ -274,7 +274,7 @@ public class MissionSimulator {
             isPlayerTurn = true; // Switch to player turn
         } else {
             handleEnemyAttack();
-            isPlayerTurn = true;
+            isPlayerTurn = true; // Switch to player turn
         }
 
         moveRandomlyEnemies();
