@@ -18,6 +18,7 @@ import java.util.Iterator;
  */
 public class Network<T> extends Graph<T> implements NetworkADT<T> {
 
+
     /**
      * Matrix to store the weights of the edges.
      */
@@ -384,5 +385,14 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
             weightMatrix[index2][index1] = weight;
         }
     }
+
+    public double[][] getWeightMatrix() {
+        return weightMatrix;
+    }
+
+    public void setWeightMatrix(double[][] weightMatrix) {
+        this.weightMatrix = weightMatrix;
+    }
+
 
 }

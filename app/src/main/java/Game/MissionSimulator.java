@@ -104,7 +104,7 @@ public class MissionSimulator {
                             for (PathWithWeight pathWithWeight : pathToTarget) {
                                 totalWeight += pathWithWeight.getWeight();
                             }
-                            System.out.println("CAMINHO " + caminhoAlternativas + " | Total peso: " + totalWeight);
+                            System.out.println("CAMINHO " + caminhoAlternativas + " | Total peso: " + totalWeight + " | Destino: " + room.getName());
                             //Quando sabemos o total de peso do caminho, comparamos com a melhor opçao
                             if (totalWeight < bestPathToTargetWeight) {
                                 bestPathToTarget = pathToTarget;
