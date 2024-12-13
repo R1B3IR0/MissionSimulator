@@ -1,6 +1,7 @@
 package Game;
 
 import Game.Player.Enemy;
+import Game.interfaces.IBuilding;
 import Structures.collections.graphs.Network;
 import Structures.collections.lists.ArrayUnorderedList;
 import Structures.collections.lists.UnorderedLinkedList;
@@ -17,7 +18,7 @@ import org.graphstream.graph.implementations.SingleGraph;
 import java.util.Iterator;
 
 
-public class Building {
+public class Building implements IBuilding {
 
     private Network<Room> map;
 
@@ -56,7 +57,7 @@ public class Building {
      * @param room2 The second room
      * @return The calculated weight between the two rooms
      */
-    private double calculateWeight(Room room1, Room room2) {
+    public double calculateWeight(Room room1, Room room2) {
         double weight = 0.0;
 
         for (Enemy enemy : room1.getEnemies()) {

@@ -2,6 +2,7 @@ package Game;
 
 import Game.Player.Enemy;
 import Game.Item.Item;
+import Game.interfaces.IRoom;
 import Structures.collections.lists.ArrayUnorderedList;
 import Structures.collections.lists.UnorderedListADT;
 
@@ -11,7 +12,7 @@ import java.util.Iterator;
  * Represents a room within a building in the mission simulation.
  * A room can contain enemies, items, and has a specific classification such as "normal" or "entrada-saida".
  */
-public class Room {
+public class Room implements IRoom {
 
     private String name; // Name of the room
     private String classification; // Classification of the room (e.g., "normal", "entrada-saida")

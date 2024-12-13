@@ -10,6 +10,7 @@ import Game.Item.HealthKit;
 import Game.Item.Item;
 import Game.Player.Agent;
 import Game.Player.Enemy;
+import Game.interfaces.IMissionSimulator;
 import Structures.collections.graphs.Network;
 import Structures.collections.lists.ArrayUnorderedList;
 import Structures.collections.lists.UnorderedListADT;
@@ -22,7 +23,7 @@ import java.util.Scanner;
  * It manages the agent, target, enemies, and building components while executing a turn-based game loop.
  */
 
-public class MissionSimulator {
+public class MissionSimulator implements IMissionSimulator {
     private Mission mission;
     private Agent agent;
     private Target target;
@@ -361,7 +362,7 @@ public class MissionSimulator {
      *
      * @return The chosen action.
      */
-    private int getPlayerAction() {
+    public int getPlayerAction() {
         Scanner scanner = new Scanner(System.in);
         int action = -1;
 
