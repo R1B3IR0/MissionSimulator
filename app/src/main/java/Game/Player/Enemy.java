@@ -1,6 +1,7 @@
 package Game.Player;
 
 import Game.Building;
+import Game.Connection;
 import Game.Room;
 import Structures.collections.graphs.Network;
 import Structures.collections.lists.ArrayUnorderedList;
@@ -68,29 +69,14 @@ public class Enemy {
     public void moveRandomly(Network<Room> network, Building building) {
         Room currentRoom = this.getRoom();
 
-        // Obtém um iterador para os vértices (salas) no grafo
-        Iterator<Room> iterator = network.vertexIterator();
-
-        while (iterator.hasNext()) {
-            Room room = iterator.next();
-            System.out.println("Sala atual: " + currentRoom.getName() + "sala adjacente: " + room.getName());
-            if (room.equals(currentRoom)) {
-                break;
-            }
-        }
-
+        Iterator<Room> iteratorConnections = network.findNeighbors(currentRoom);
 
         // Armazena as salas vizinhas
         ArrayUnorderedList<Room> adjacentRooms = new ArrayUnorderedList<>();
-
-        // Percorre os vértices adjacentes
-        if (iterator.hasNext()) { // Itera a primeira vez
-            Room adjacentRoom = iterator.next();
-
-            // Verifica se existe uma aresta entre as duas salas
-
-            if ( adjacentRoom != null && network.getWeight(currentRoom, adjacentRoom) != Double.POSITIVE_INFINITY) {
-                adjacentRooms.addToRear(adjacentRoom);  // Adiciona a sala vizinha
+        while (iteratorConnections.hasNext()) {
+            var room = iteratorConnections.next();
+            if (adjacentRooms.contains(room) == false) {
+                adjacentRooms.addToRear(room);
             }
         }
 
@@ -101,12 +87,12 @@ public class Enemy {
         for (Room adjacentRoom : adjacentRooms) {
             twoStepRooms.addToRear(adjacentRoom);  // Adiciona a sala adjacente
 
-            iterator = network.vertexIterator();
+            iteratorConnections = network.findNeighbors(adjacentRoom);
 
-            if (iterator.hasNext()) { // Itera a segunda vez
-                Room twoStepRoom = iterator.next();
-                if (twoStepRoom != null && network.getWeight(adjacentRoom, twoStepRoom) != Double.POSITIVE_INFINITY && !twoStepRooms.contains(twoStepRoom)) {
-                    twoStepRooms.addToRear(twoStepRoom);
+            while (iteratorConnections.hasNext()) {
+                  room = iteratorConnections.next();
+                if (twoStepRooms.contains(room) == false) {
+                    twoStepRooms.addToRear(room);
                 }
             }
         }
