@@ -119,26 +119,32 @@ public class MissionSimulator implements IMissionSimulator {
             if (!currentRoom.getEnemies().isEmpty()) {
                 System.out.println("You cannot move while enemies are present in the room.");
             } else {
+                // Target Room
                 Room targetRoom = mission.getTarget().getRoom();
+                // Se o alvo for resgatado, verificar qual a melhor sala de saída
                 if (mission.getTarget().isRescued()) {
                     {
+                        // Por defeito é a sala inicial
                         targetRoom = this.initialRoom;
+
                         ArrayUnorderedList<Room> targetRoomsExit = this.mission.getBuilding().getRoomsWithEntryExit();
 
                         ArrayUnorderedList<PathWithWeight<Room>> bestPathToTarget = null;
-                        double bestPathToTargetWeight = Double.MAX_VALUE;
-                        int caminhoAlternativas = 1;
+                        double bestPathToTargetWeight = Double.MAX_VALUE; // valor máximo de Double
+                        int caminhoAlternativas = 1; // variáveis auxiliares
                         int caminhoEscolhido = 0;
+
                         for (Room room : targetRoomsExit) {
+                            // Retorna o melhor caminho para cada sala de saída
                             ArrayUnorderedList<PathWithWeight<Room>> pathToTarget = findBestPathToTarget(currentRoom, room);
                             double totalWeight = 0;
                             for (PathWithWeight pathWithWeight : pathToTarget) {
-                                totalWeight += pathWithWeight.getWeight();
+                                totalWeight += pathWithWeight.getWeight(); // total de peso dos caminhos de todas as salas
                             }
                             System.out.println("Path " + caminhoAlternativas + " | Total Weight: " + totalWeight + " | Target Room: " + room.getName());
-                            //Quando sabemos o total de peso do caminho, comparamos com a melhor opçao
+                            //Quando sabemos o total de peso do caminho, comparamos com a melhor opçao para sair.
                             if (totalWeight < bestPathToTargetWeight) {
-                                bestPathToTarget = pathToTarget;
+                                bestPathToTarget = pathToTarget; // Se os inimigos não trocassem de sala, este seria o melhor caminho
                                 bestPathToTargetWeight = totalWeight;
                                 targetRoom = room;
                                 caminhoEscolhido = caminhoAlternativas;
@@ -193,7 +199,7 @@ public class MissionSimulator implements IMissionSimulator {
             }
         } else {
             System.out.println("No enemies in the room. Enemies will now move.");
-            moveRandomlyEnemies();
+            //moveRandomlyEnemies();
             isPlayerTurn = false; // Switch to enemy turn
         }
     }
@@ -226,22 +232,9 @@ public class MissionSimulator implements IMissionSimulator {
             room.removeEnemy(enemy);
         }
 
-        // Cenário 1: Fase do jogador (Tó Cruz ataca os inimigos que estão na sala)
-        while (iterator.hasNext()) {
-            Enemy enemy = iterator.next();
-            enemy.takeDamage(agent.getPower()); // Aplica dano a todos os inimigos na sala
-            System.out.println("Agent attacked " + enemy.getName() + ". Enemy current health: " + enemy.getHeatlh());
-
-            if (enemy.getHeatlh() <= 0) {
-                System.out.println(enemy.getName() + " was defeated!");
-                room.removeEnemy(enemy);
-            }
-        }
-
         // Verificação: Se todos os inimigos foram derrotados, encerra o combate
         if (room.getEnemies().isEmpty()) {
             System.out.println("All enemies in the room have been defeated. Combat ends.");
-
         } else {
             System.out.println("Enemies remains in the room. Prepare for their retaliation!");
             isPlayerTurn = false; // Muda para o turno dos inimigos
@@ -277,7 +270,8 @@ public class MissionSimulator implements IMissionSimulator {
             while (enemyIterator.hasNext()) {
                 Enemy enemy = enemyIterator.next();
                 enemy.moveRandomly(mission.getBuilding().getMap(), mission.getBuilding());
-                //System.out.println("Enemies moved to new room");
+                System.out.println("Nova Sala:" + enemy.getRoom().getName());
+
             }
         }
     }
@@ -295,8 +289,6 @@ public class MissionSimulator implements IMissionSimulator {
             handleEnemyAttack();
             isPlayerTurn = true; // Switch to player turn
         }
-
-        moveRandomlyEnemies();
     }
 
     /**
